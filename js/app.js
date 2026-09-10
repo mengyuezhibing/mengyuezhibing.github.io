@@ -185,10 +185,10 @@
     }
   })();
 
-  /* ========== ② rem 自适应（源自终末地官网的设计稿缩放思路） ==========
-   * 官网方案：以 2560×1440 / 1080×1920 为设计稿，等比换算 html 的 font-size，
-   * 页面所有尺寸用 rem 书写 → 一套设计稿等比适配所有屏幕。
-   * 这里保守化：只在 0.94 ~ 1.25 倍区间微调，避免小屏文字过小。
+  /* ========== ② rem 等比缩放 ==========
+   * 按 1920 设计稿等比换算 html 的 font-size，页面尺寸以 rem 书写，
+   * 从而一套设计稿适配各种屏幕。这里保守化：只在 0.94 ~ 1.25 倍区间微调，
+   * 避免小屏文字过小。
    */
   (function rootScale() {
     function apply() {
@@ -617,6 +617,182 @@
     box.innerHTML = stats.map(function (s) {
       return '<li><b>' + esc(s.value) + '</b><span>' + esc(s.label) + '</span></li>';
     }).join('');
+  })();
+
+  /* ========== ⑩ 点云 3D 模型 ========== */
+  (function model3d() {
+    var cvs = $('#modelCanvas');
+    if (!cvs) return;
+    var ctx = cvs.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var W = 0, H = 0, cx = 0, cy = 0;
+    var pts = [], list = [], pool = [], poolIdx = 0;
+    var running = false;
+
+    var rotX = -0.36, rotY = 0.72;
+    var spinY = reduced ? 0 : 0.0032;
+    var velX = 0, velY = 0;
+    var dragging = false, lastX = 0, lastY = 0, pointerId = null;
+
+    var elX = $('#d3RotX'), elY = $('#d3RotY'), elPts = $('#d3Points');
+
+    /* 网格立方体：六面均匀采样，附带外法线，坐标归一化到 [-1,1] */
+    function buildCube(div) {
+      var p = [], step = 2 / div;
+      for (var i = 0; i <= div; i++) {
+        for (var j = 0; j <= div; j++) {
+          var a = -1 + i * step, b = -1 + j * step;
+          p.push([a, b,  1,  0,  0,  1]);   // +Z 前
+          p.push([a, b, -1,  0,  0, -1]);   // -Z 后
+          p.push([a,  1, b,  0,  1,  0]);   // +Y 上
+          p.push([a, -1, b,  0, -1,  0]);   // -Y 下
+          p.push([ 1, a, b,  1,  0,  0]);   // +X 右
+          p.push([-1, a, b, -1,  0,  0]);   // -X 左
+        }
+      }
+      return p;
+    }
+
+    function take() {
+      if (poolIdx < pool.length) return pool[poolIdx++];
+      var o = { x: 0, y: 0, z: 0, a: 0, s: 0, f: 0 };
+      pool.push(o); poolIdx++;
+      return o;
+    }
+
+    function resize() {
+      W = cvs.clientWidth; H = cvs.clientHeight;
+      cvs.width = Math.round(W * dpr);
+      cvs.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx = W / 2; cy = H / 2;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      var fov = 3.4, scale = Math.min(W, H) * 0.44;
+      var cY = Math.cos(rotY), sY = Math.sin(rotY);
+      var cX = Math.cos(rotX), sX = Math.sin(rotX);
+
+      poolIdx = 0; list.length = 0;
+
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+
+        // 面法线旋转后的 z 分量 > 0 → 该面朝向观察者
+        var nx = p[3] * cY + p[5] * sY;
+        var nz = -p[3] * sY + p[5] * cY;
+        var front = (p[4] * sX + nz * cX) > 0;
+
+        // 顶点旋转
+        var x1 = p[0] * cY + p[2] * sY;
+        var z1 = -p[0] * sY + p[2] * cY;
+        var y1 = p[1] * cX - z1 * sX;
+        var z2 = p[1] * sX + z1 * cX;
+
+        var k = fov / (fov + z2);
+        var t = (z2 + 1.7321) / 3.4642;          // 0(最远) ~ 1(最近)
+
+        var o = take();
+        o.x = cx + x1 * k * scale;
+        o.y = cy + y1 * k * scale;
+        o.z = z2;
+        if (front) {                              // 正面：清晰、较大
+          o.a = 0.6 + t * 0.4;
+          o.s = (1.7 + t * 2.3) * dpr;
+          o.f = 1;
+        } else {                                  // 背面：隐约可见，提供纵深
+          o.a = 0.04 + t * 0.1;
+          o.s = (0.9 + t * 1.0) * dpr;
+          o.f = 0;
+        }
+        list.push(o);
+      }
+
+      list.sort(function (a, b) { return a.z - b.z; });   // 远的先画
+
+      for (var n = 0; n < list.length; n++) {
+        var q = list[n];
+        ctx.fillStyle = q.f
+          ? (q.a > 0.86 ? 'rgba(184,144,42,' + q.a.toFixed(3) + ')'    // 最近处：金
+                        : 'rgba(63,90,44,' + q.a.toFixed(3) + ')')     // 正面：深绿
+          : 'rgba(63,90,44,' + q.a.toFixed(3) + ')';                   // 背面：极淡
+        ctx.fillRect(q.x, q.y, q.s, q.s);
+      }
+    }
+
+    function fmtDeg(rad) {
+      var d = Math.round(rad * 180 / Math.PI) % 360;
+      if (d < 0) d += 360;
+      return (d < 100 ? '0' : '') + (d < 10 ? '0' : '') + d + '\u00b0';
+    }
+
+    function step() {
+      if (!running) return;
+      if (!dragging) {
+        rotY += spinY + velY;
+        rotX += velX;
+        velX *= 0.93; velY *= 0.93;
+        if (Math.abs(velX) < 0.00002) velX = 0;
+        if (Math.abs(velY) < 0.00002) velY = 0;
+        rotX = Math.max(-1.35, Math.min(1.35, rotX));
+      }
+      draw();
+      if (elX) elX.textContent = 'ROT X ' + fmtDeg(rotX);
+      if (elY) elY.textContent = 'ROT Y ' + fmtDeg(rotY);
+      requestAnimationFrame(step);
+    }
+
+    /* ---- 拖拽旋转 ---- */
+    cvs.addEventListener('pointerdown', function (e) {
+      dragging = true; pointerId = e.pointerId;
+      lastX = e.clientX; lastY = e.clientY;
+      velX = 0; velY = 0;
+      cvs.classList.add('is-dragging');
+      if (cvs.setPointerCapture) { try { cvs.setPointerCapture(pointerId); } catch (err) {} }
+    });
+    cvs.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      rotY += dx * 0.0075;
+      rotX += dy * 0.0075;
+      rotX = Math.max(-1.35, Math.min(1.35, rotX));
+      velY = dx * 0.0014;                        // 松手后的惯性
+      velX = dy * 0.0006;
+      if (reduced) draw();                       // 关闭动效时手动重绘
+    });
+    function endDrag() {
+      dragging = false;
+      cvs.classList.remove('is-dragging');
+      if (cvs.releasePointerCapture && pointerId !== null) {
+        try { cvs.releasePointerCapture(pointerId); } catch (err) {}
+      }
+      pointerId = null;
+    }
+    cvs.addEventListener('pointerup', endDrag);
+    cvs.addEventListener('pointercancel', endDrag);
+    cvs.addEventListener('pointerleave', endDrag);
+
+    /* ---- 初始化 ---- */
+    pts = buildCube(reduced ? 10 : 18);
+    if (elPts) elPts.textContent = 'POINTS ' + pts.length;
+    resize();
+    window.addEventListener('resize', resize);
+
+    // 进入视口才跑 rAF，离开即停
+    var io = new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting) {
+        if (!running) {
+          running = true;
+          if (reduced) { draw(); running = false; } else { step(); }
+        }
+      } else { running = false; }
+    }, { threshold: 0.05 });
+    io.observe(cvs);
   })();
 
 })();

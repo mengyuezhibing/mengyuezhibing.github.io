@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Endfield-style Portfolio
+   Portfolio — 个人作品展示站
    结构：Tokens → Base → Loading → Nav → Landing → Works → Stack
         → Timeline → Notes → Contact → Footer → Responsive
    ========================================================================== */
@@ -235,7 +235,7 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 .nav__burger i{ display:block; width:22px; height:1.5px; background:var(--txt); transition:transform .3s var(--ease),opacity .3s; }
 
 /* ==========================================================
-   左侧固定菜单栏（终末地风格）
+   左侧固定菜单栏
    ========================================================== */
 .sidenav{
   position:fixed; left:0; top:50%; transform:translateY(-50%);
@@ -375,7 +375,7 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 @keyframes drop{ 0%{ transform:scaleY(0); transform-origin:top; } 50%{ transform:scaleY(1); transform-origin:top; } 51%{ transform:scaleY(1); transform-origin:bottom; } 100%{ transform:scaleY(0); transform-origin:bottom; } }
 
 /* ==========================================================
-   01 · WORKS 作品切换（对齐 Operator 板块）
+   01 · WORKS 作品切换
    ========================================================== */
 .home{ position:relative; padding:clamp(5rem,10vw,9rem) 0 clamp(4rem,8vw,7rem); border-top:1px solid var(--line); }
 .home__head{ max-width:90rem; margin:0 auto; }
@@ -555,7 +555,74 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 .ops__links{ display:flex; flex-wrap:wrap; gap:.75rem; margin-top:auto; padding-top:1.5rem; }
 
 /* ==========================================================
-   03 · STACK
+   03 · MODEL 点云模型
+   ========================================================== */
+.d3{
+  position:relative;
+  padding:clamp(4rem,8vw,7rem) 0;
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg,var(--bg),var(--bg-2) 55%,var(--bg));
+}
+.d3__stage{
+  position:relative;
+  max-width:90rem;
+  margin:clamp(2rem,4vw,3rem) auto 0;
+  padding:0 var(--gut);
+}
+.d3__canvas{
+  display:block; width:100%;
+  aspect-ratio:16/9; min-height:20rem;
+  border:1px solid var(--line);
+  background:
+    radial-gradient(55% 65% at 50% 45%,rgba(184,144,42,.12),transparent 72%),
+    repeating-linear-gradient(90deg,rgba(45,58,37,.055) 0 1px,transparent 1px 3rem),
+    repeating-linear-gradient(0deg,rgba(45,58,37,.055) 0 1px,transparent 1px 3rem),
+    linear-gradient(180deg,#fbf9ec,var(--bg-2));
+  cursor:grab;
+  touch-action:none;              /* 让 pointer 事件独占，避免拖动时滚页面 */
+}
+.d3__canvas.is-dragging{ cursor:grabbing; }
+
+/* HUD 读数 */
+.d3__hud{
+  position:absolute; left:calc(var(--gut) + 1.1rem); top:1.1rem;
+  display:flex; flex-wrap:wrap; gap:.6rem 1.4rem;
+  color:var(--accent); pointer-events:none;
+}
+.d3__hud span{
+  padding:.25rem .55rem;
+  background:rgba(243,241,226,.72);
+  border:1px solid var(--line);
+}
+.d3__hint{
+  position:absolute; right:calc(var(--gut) + 1.1rem); bottom:1.1rem;
+  display:flex; align-items:center; gap:.5rem;
+  color:var(--txt-3); pointer-events:none;
+}
+.d3__hint i{
+  width:5px; height:5px; background:var(--accent-2); border-radius:50%;
+  box-shadow:0 0 8px var(--accent-2);
+  animation:blink 1.6s infinite;
+}
+
+/* 四角框线 */
+.d3__corner{
+  position:absolute; width:1.1rem; height:1.1rem;
+  border:1px solid var(--accent);
+  pointer-events:none; opacity:.7;
+}
+.d3__corner--tl{ left:var(--gut); top:0; border-right:0; border-bottom:0; }
+.d3__corner--tr{ right:var(--gut); top:0; border-left:0; border-bottom:0; }
+.d3__corner--bl{ left:var(--gut); bottom:0; border-right:0; border-top:0; }
+.d3__corner--br{ right:var(--gut); bottom:0; border-left:0; border-top:0; }
+
+@media (max-width:860px){
+  .d3__hud{ left:calc(var(--gut) + .6rem); top:.6rem; gap:.35rem .8rem; }
+  .d3__hint{ right:calc(var(--gut) + .6rem); bottom:.6rem; }
+}
+
+/* ==========================================================
+   04 · STACK
    ========================================================== */
 .lore{ position:relative; padding:clamp(5rem,10vw,9rem) 0; border-top:1px solid var(--line); background:linear-gradient(180deg,var(--bg),var(--bg-2) 50%,var(--bg)); }
 .lore__grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1px; max-width:90rem; margin:clamp(2.5rem,5vw,4rem) auto 0; padding:0 var(--gut); background:var(--line); }

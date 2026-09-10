@@ -14,15 +14,16 @@
 </head>
 <body data-page="home">
 
-<!-- ============ 左侧固定菜单栏（终末地风格） ============ -->
+<!-- ============ 左侧固定菜单栏 ============ -->
 <nav class="sidenav" id="sidenav" aria-label="主导航">
   <div class="sidenav__inner">
     <a href="#home"     class="sidenav__link is-active"><i class="sidenav__bar"></i><em class="mono">01</em><span>首页</span></a>
     <a href="#works"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">02</em><span>作品</span></a>
-    <a href="#stack"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">03</em><span>技术栈</span></a>
-    <a href="#timeline" class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">04</em><span>经历</span></a>
-    <a href="#notes"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">05</em><span>日志</span></a>
-    <a href="#contact"  class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">06</em><span>联系</span></a>
+    <a href="#model"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">03</em><span>模型</span></a>
+    <a href="#stack"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">04</em><span>技术栈</span></a>
+    <a href="#timeline" class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">05</em><span>经历</span></a>
+    <a href="#notes"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">06</em><span>日志</span></a>
+    <a href="#contact"  class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">07</em><span>联系</span></a>
   </div>
 </nav>
 
@@ -63,10 +64,11 @@
   <nav class="nav__menu" id="navMenu">
     <a href="#home"     class="nav__link is-active"><em class="mono">01</em><span>首页</span></a>
     <a href="#works"    class="nav__link"><em class="mono">02</em><span>作品</span></a>
-    <a href="#stack"    class="nav__link"><em class="mono">03</em><span>技术栈</span></a>
-    <a href="#timeline" class="nav__link"><em class="mono">04</em><span>经历</span></a>
-    <a href="#notes"    class="nav__link"><em class="mono">05</em><span>日志</span></a>
-    <a href="#contact"  class="nav__link"><em class="mono">06</em><span>联系</span></a>
+    <a href="#model"    class="nav__link"><em class="mono">03</em><span>模型</span></a>
+    <a href="#stack"    class="nav__link"><em class="mono">04</em><span>技术栈</span></a>
+    <a href="#timeline" class="nav__link"><em class="mono">05</em><span>经历</span></a>
+    <a href="#notes"    class="nav__link"><em class="mono">06</em><span>日志</span></a>
+    <a href="#contact"  class="nav__link"><em class="mono">07</em><span>联系</span></a>
   </nav>
 
   <div class="nav__side">
@@ -175,30 +177,58 @@
     </div>
   </section>
 
-  <!-- ============ 03 · LORE / 技术栈 ============ -->
+  <!-- ============ 03 · MODEL 点云模型 ============ -->
+  <section class="d3" id="model">
+    <div class="home__head home__head--center">
+      <div class="home__idx mono reveal">// 03 — MODEL</div>
+      <h2 class="home__title reveal" data-delay="60">点云模型</h2>
+      <p class="home__desc reveal" data-delay="120">
+        由上千个粒子构成的三维网格，拖动可自由旋转。
+      </p>
+    </div>
+
+    <div class="d3__stage reveal" data-delay="180">
+      <canvas class="d3__canvas" id="modelCanvas"></canvas>
+
+      <div class="d3__hud mono">
+        <span id="d3RotX">ROT X +00°</span>
+        <span id="d3RotY">ROT Y +00°</span>
+        <span id="d3Points">POINTS 0000</span>
+      </div>
+
+      <div class="d3__hint mono"><i></i>DRAG TO ROTATE · 拖动旋转</div>
+
+      <span class="d3__corner d3__corner--tl"></span>
+      <span class="d3__corner d3__corner--tr"></span>
+      <span class="d3__corner d3__corner--bl"></span>
+      <span class="d3__corner d3__corner--br"></span>
+    </div>
+  </section>
+
+  <!-- ============ 04 · LORE / 技术栈 ============ -->
   <section class="lore" id="stack">
     <div class="home__head home__head--center">
-      <div class="home__idx mono reveal">// 03 — STACK</div>
+      <div class="home__idx mono reveal">// 04 — STACK</div>
       <h2 class="home__title reveal" data-delay="60">技术栈</h2>
       <p class="home__desc reveal" data-delay="120">工具会变，底层逻辑不会。</p>
     </div>
     <div class="lore__grid" id="stackGrid"></div>
   </section>
 
-  <!-- ============ 09 · CALENDAR / 经历 ============ -->
+  <!-- ============ 05 · CALENDAR / 经历 ============ -->
   <section class="cal" id="timeline">
     <div class="home__head home__head--center">
-      <div class="home__idx mono reveal">// 04 — TIMELINE</div>
+      <div class="home__idx mono reveal">// 05 — TIMELINE</div>
       <h2 class="home__title reveal" data-delay="60">经历时间轴</h2>
     </div>
     <ol class="cal__line" id="timelineList"></ol>
   </section>
 
-  <!-- ============ 04 · INFORMATION / 日志 ============ -->
+  <!-- ============ 06 · INFORMATION / 日志 ============ -->
   <section class="info" id="notes">
     <div class="info__head">
       <div class="home__head">
-        <div class="home__idx mono reveal">// 05 — NOTES</div>
+        <div class="home__idx mono reveal">// 06 — NOTES</div>
         <h2 class="home__title reveal" data-delay="60">技术日志</h2>
       </div>
       <div class="info__tabs" id="infoTabs" role="tablist"></div>
@@ -209,11 +239,11 @@
     </div>
   </section>
 
-  <!-- ============ 末页 · CONTACT ============ -->
+  <!-- ============ 07 · CONTACT ============ -->
   <section class="final" id="contact">
     <div class="final__deco" aria-hidden="true"></div>
     <div class="final__inner reveal">
-      <div class="home__idx mono">// 06 — CONTACT</div>
+      <div class="home__idx mono">// 07 — CONTACT</div>
       <h2 class="final__title" id="contactTitle">一起做点有意思的东西</h2>
       <p class="final__desc" id="contactDesc">如果你也在推进某个边界，欢迎来聊。</p>
       <div class="final__actions">
