@@ -13,10 +13,13 @@ window.SITE_CONFIG = {
     nameCn: '梦月之冰',
     role: 'macOS · DESKTOP DEV',
     github: 'mengyuezhibing',
-    email: 'mengyuezhibing@users.noreply.github.com',
+    email: '3444162072@qq.com',
+    qq: '3444162072',
     location: 'China',
     links: [
-      { label: 'GitHub',   url: 'https://github.com/mengyuezhibing' }
+      { label: 'GitHub',    url: 'https://github.com/mengyuezhibing' },
+      { label: 'QQ 3444162072', url: 'https://wpa.qq.com/msgrd?v=3&uin=3444162072&site=qq&menu=yes' },
+      { label: 'QQ邮箱',     url: 'mailto:3444162072@qq.com' }
     ]
   },
 

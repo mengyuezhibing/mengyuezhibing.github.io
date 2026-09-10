@@ -51,6 +51,16 @@
 
     var gh = $('#navGithub'); if (gh) gh.href = ghUrl;
     var cg = $('#contactGh'); if (cg) cg.href = ghUrl;
+
+    // QQ 图标（顶部导航，GitHub 旁边）
+    var qq = $('#navQQ');
+    if (qq && p.qq) {
+      qq.href = 'https://wpa.qq.com/msgrd?v=3&uin=' + encodeURIComponent(p.qq) + '&site=qq&menu=yes';
+      qq.title = 'QQ: ' + p.qq;
+    } else if (qq) {
+      qq.style.display = 'none';
+    }
+
     var cm = $('#contactMail');
     if (cm && p.email) { cm.href = 'mailto:' + p.email; cm.querySelector('span').textContent = p.email; }
 
