@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PORTFOLIO // 作品展示</title>
+<meta name="description" content="个人 GitHub 作品展示站" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+
+<link rel="stylesheet" href="./css/main.css" />
+</head>
+<body data-page="home">
+
+<!-- ============ 左侧固定菜单栏（终末地风格） ============ -->
+<nav class="sidenav" id="sidenav" aria-label="主导航">
+  <div class="sidenav__inner">
+    <a href="#home"     class="sidenav__link is-active"><i class="sidenav__bar"></i><em class="mono">01</em><span>首页</span></a>
+    <a href="#works"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">02</em><span>作品</span></a>
+    <a href="#stack"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">03</em><span>技术栈</span></a>
+    <a href="#timeline" class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">04</em><span>经历</span></a>
+    <a href="#notes"    class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">05</em><span>日志</span></a>
+    <a href="#contact"  class="sidenav__link"><i class="sidenav__bar"></i><em class="mono">06</em><span>联系</span></a>
+  </div>
+</nav>
+
+<!-- ============ 00 · LOADING 加载屏 ============ -->
+<div class="loading" id="loading">
+  <div class="loading__bg"></div>
+  <div class="loading__triangles"></div>
+  <div class="loading__inner">
+    <div class="loading__symbol">
+      <span class="tri tri--a"></span>
+      <span class="tri tri--b"></span>
+      <span class="tri tri--c"></span>
+    </div>
+    <div class="loading__logo" id="loadingLogo">PORTFOLIO</div>
+    <div class="loading__divider"><i></i><em>INITIALIZING</em><i></i></div>
+    <div class="loading__slogan" id="loadingSlogan">跨越边境 直至前线</div>
+    <div class="loading__progress">
+      <div class="loading__bar"><span id="loadingBar"></span></div>
+      <div class="loading__meta">
+        <span class="mono">LOADING ASSETS</span>
+        <span class="loading__value mono" id="loadingValue">000</span>
+      </div>
+    </div>
+  </div>
+  <div class="loading__deco mono">SYS<span>·</span>READY</div>
+</div>
+
+<!-- ============ 02 · NAV 顶部导航 ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#home">
+    <span class="nav__mark"></span>
+    <span class="nav__brandText">
+      <b id="navName">YOUR NAME</b>
+      <i class="mono" id="navRole">FRONTEND / CREATIVE DEV</i>
+    </span>
+  </a>
+
+  <nav class="nav__menu" id="navMenu">
+    <a href="#home"     class="nav__link is-active"><em class="mono">01</em><span>首页</span></a>
+    <a href="#works"    class="nav__link"><em class="mono">02</em><span>作品</span></a>
+    <a href="#stack"    class="nav__link"><em class="mono">03</em><span>技术栈</span></a>
+    <a href="#timeline" class="nav__link"><em class="mono">04</em><span>经历</span></a>
+    <a href="#notes"    class="nav__link"><em class="mono">05</em><span>日志</span></a>
+    <a href="#contact"  class="nav__link"><em class="mono">06</em><span>联系</span></a>
+  </nav>
+
+  <div class="nav__side">
+    <a class="nav__gh mono" id="navGithub" href="https://github.com/" target="_blank" rel="noreferrer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.4-3.88-1.4-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.79 1.07.79 2.16v3.2c0 .3.2.66.8.55A11.5 11.5 0 0 0 12 .5Z"/></svg>
+      <span>GITHUB</span>
+    </a>
+    <button class="nav__burger" id="navBurger" aria-label="菜单"><i></i><i></i><i></i></button>
+  </div>
+  <div class="nav__scan"></div>
+</header>
+
+<main>
+  <!-- ============ 00 · LANDING 首屏 ============ -->
+  <section class="landing" id="home">
+    <div class="landing__img" aria-hidden="true"></div>
+    <canvas class="landing__canvas" id="bgCanvas"></canvas>
+    <div class="landing__texture"></div>
+    <div class="landing__grid"></div>
+    <div class="landing__vignette"></div>
+
+    <div class="landing__inner">
+      <div class="landing__tag mono reveal" data-delay="0">
+        <i class="dot"></i> OPEN SOURCE · PORTFOLIO · <span id="heroYear">2026</span>
+      </div>
+
+      <h1 class="landing__title reveal" data-delay="80">
+        <span class="landing__titleSm" id="heroSub">SELECTED</span>
+        <span class="landing__titleLg"><span id="heroTitleL1">BUILD</span><span id="heroTitleL2">THE FRONTLINE</span></span>
+      </h1>
+
+      <div class="landing__divider reveal" data-delay="160"><i></i><i></i><i></i></div>
+
+      <p class="landing__slogan reveal" data-delay="220" id="heroSlogan">
+        以工程化思维，跨越设计与实现之间的边境。
+      </p>
+
+      <div class="landing__actions reveal" data-delay="300">
+        <a class="btn btn--primary" href="#works">
+          <span>查看作品</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn--ghost" id="heroResume" href="#contact">
+          <span>联系我</span>
+        </a>
+      </div>
+
+      <ul class="landing__stats reveal" data-delay="380" id="heroStats"></ul>
+    </div>
+
+    <a class="landing__next" href="#works">
+      <span class="mono">SCROLL</span>
+      <i class="landing__nextLine"></i>
+    </a>
+
+    <div class="landing__triangles" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- ============ 01 · HOME 容器 / 作品 ============ -->
+  <section class="home" id="works">
+    <div class="home__head">
+      <div class="home__idx mono reveal">// 02 — WORKS</div>
+      <h2 class="home__title reveal" data-delay="60">精选作品</h2>
+      <p class="home__desc reveal" data-delay="120">
+        每一个项目都是一次对边界的推进。点选左侧条目查看详情。
+      </p>
+    </div>
+
+    <div class="ops">
+      <!-- 左侧竖线菜单 -->
+      <aside class="ops__list" id="opsList" aria-label="项目列表"></aside>
+
+      <!-- 右侧：截图轮播 + 详情 -->
+      <div class="ops__stage">
+        <div class="carousel" id="opsCarousel">
+          <div class="carousel__track" id="opsTrack"></div>
+
+          <button class="carousel__nav carousel__nav--prev" id="opsPrev" aria-label="上一张">
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button class="carousel__nav carousel__nav--next" id="opsNext" aria-label="下一张">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+
+          <div class="carousel__progress" id="opsProgress" aria-hidden="true">
+            <div class="carousel__progressBar" id="opsProgressBar"></div>
+          </div>
+
+          <div class="carousel__dots" id="opsDots"></div>
+
+          <div class="carousel__hint mono" id="opsHint">AUTO-PLAY · 4 SCREENS</div>
+        </div>
+
+        <div class="ops__info" id="opsInfo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 · LORE / 技术栈 ============ -->
+  <section class="lore" id="stack">
+    <div class="home__head home__head--center">
+      <div class="home__idx mono reveal">// 03 — STACK</div>
+      <h2 class="home__title reveal" data-delay="60">技术栈</h2>
+      <p class="home__desc reveal" data-delay="120">工具会变，底层逻辑不会。</p>
+    </div>
+    <div class="lore__grid" id="stackGrid"></div>
+  </section>
+
+  <!-- ============ 09 · CALENDAR / 经历 ============ -->
+  <section class="cal" id="timeline">
+    <div class="home__head home__head--center">
+      <div class="home__idx mono reveal">// 04 — TIMELINE</div>
+      <h2 class="home__title reveal" data-delay="60">经历时间轴</h2>
+    </div>
+    <ol class="cal__line" id="timelineList"></ol>
+  </section>
+
+  <!-- ============ 04 · INFORMATION / 日志 ============ -->
+  <section class="info" id="notes">
+    <div class="info__head">
+      <div class="home__head">
+        <div class="home__idx mono reveal">// 05 — NOTES</div>
+        <h2 class="home__title reveal" data-delay="60">技术日志</h2>
+      </div>
+      <div class="info__tabs" id="infoTabs" role="tablist"></div>
+    </div>
+    <div class="info__grid" id="infoGrid"></div>
+    <div class="info__foot">
+      <button class="btn btn--ghost btn--sm" id="infoMore"><span>加载更多</span></button>
+    </div>
+  </section>
+
+  <!-- ============ 末页 · CONTACT ============ -->
+  <section class="final" id="contact">
+    <div class="final__deco" aria-hidden="true"></div>
+    <div class="final__inner reveal">
+      <div class="home__idx mono">// 06 — CONTACT</div>
+      <h2 class="final__title" id="contactTitle">一起做点有意思的东西</h2>
+      <p class="final__desc" id="contactDesc">如果你也在推进某个边界，欢迎来聊。</p>
+      <div class="final__actions">
+        <a class="btn btn--primary" id="contactMail" href="mailto:"><span>发送邮件</span></a>
+        <a class="btn btn--ghost" id="contactGh" href="https://github.com/" target="_blank" rel="noreferrer"><span>GitHub</span></a>
+      </div>
+      <ul class="final__links" id="contactLinks"></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__l">
+    <span class="mono" id="footName">YOUR NAME</span>
+    <span class="mono foot__dim">© <span id="footYear">2026</span> ALL RIGHTS RESERVED</span>
+  </div>
+  <div class="foot__r mono">
+    <span>POWERED BY HTML · CSS · VANILLA JS</span>
+    <a href="#home">BACK TO TOP ↑</a>
+  </div>
+</footer>
+
+<script src="./js/config.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>

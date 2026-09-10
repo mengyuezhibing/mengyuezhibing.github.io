@@ -1,0 +1,14 @@
+### macOS ###
+.DS_Store
+._*
+.Trashes
+
+### 编辑器 ###
+.vscode/
+.idea/
+*.swp
+
+### 本地调试 / 工具产物 ###
+.playwright-cli/
+node_modules/
+*.log
