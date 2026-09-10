@@ -6,6 +6,11 @@
 
 ## 更新日志
 
+### v8 技术日志改为独立数据文件
+
+- 技术日志从 `config.js` 拆出为 **`data/notes.json`**，站点运行时加载，改这一个文件即可更新日志
+- `config.js` 的 `notes` 仅作离线 / `file://` 直接打开时的回退；新增可选 `notesFile` 指定路径
+
 ### v7 模型调优 + 多格式转换
 
 - 点云不再省略背面（全部绘制），旋转时模型完整可见
@@ -59,8 +64,10 @@
 ├── css/
 │   └── main.css      设计系统：Tokens / 组件 / 装饰 / 响应式
 ├── js/
-│   ├── config.js     ★ 只改这个文件：个人信息、作品、技术栈、经历、日志、配色
+│   ├── config.js     ★ 主配置：个人信息、作品、技术栈、经历、配色（日志见下方说明）
 │   └── app.js        交互：加载动画、rem 自适应、Canvas 背景、滚动揭示、作品轮播、GitHub API
+├── data/
+│   └── notes.json    ★ 技术日志数据源：改这一个文件即可更新日志（运行时加载）
 ├── assets/
 │   ├── hero.jpg      首屏氛围背景
 │   └── works/        4 张应用界面截图（wallpaper / chaofeng / shuiyin / kecheng）
@@ -139,7 +146,9 @@ profile: {
 
 ### 3. 其余内容
 
-`hero`（首屏文案/指标）、`stack`（技术栈）、`timeline`（经历）、`notes`（日志，`cate` 会自动生成 Tab）、`theme`（配色）。
+`hero`（首屏文案/指标）、`stack`（技术栈）、`timeline`（经历）、`theme`（配色）。
+
+> **技术日志单独管理**：日志不再写在 `config.js`，而是放在 `data/notes.json`，站点运行时自动加载。以后只改这一个文件即可更新日志（详见下文「改技术日志」）。`config.js` 里的 `notes` 仅作为离线 / 直接双击 `index.html` 打开时的回退，平时无需动。
 
 ### 4. 换配色
 
@@ -195,6 +204,29 @@ JSON 支持两种写法：
 - Blender（开源）导入任意格式后导出 OBJ/PLY/GLB，再交给本站脚本
 
 > 用法：先把模型转成 **OBJ / PLY / GLB** 任一，再跑上面的 `model2json.py` 得到 JSON 点云，最后在 `config.js` 的 `model.url` 填入路径即可。
+
+---
+
+### 6. 改技术日志
+
+技术日志数据源是 **`data/notes.json`**（站点运行时 `fetch` 加载），改这一个文件即可，无需动 `config.js`。
+
+```json
+[
+  {
+    "cate":  "macOS",                 // 分类：会自动生成顶部 Tab
+    "title": "文章标题",
+    "date":  "2026-08-20",           // 发布日期
+    "brief": "一句话摘要",
+    "url":   ""                       // 留空 = 仅展示不跳转；填链接则整卡可点
+    // 可选："cover": "./assets/notes/x.jpg"  配图；"color": "#7da266" 卡片主色
+  }
+]
+```
+
+- 数组每一项是一篇日志；`cate` 相同会自动归到同一个 Tab，新增分类会自动出现新 Tab。
+- 想增删日志：直接改 `data/notes.json` 后保存，本地预览或部署即生效。
+- 直接双击 `index.html`（`file://`）打开时浏览器禁止 `fetch` 本地文件，会自动回退显示 `config.js` 里的 `notes`（仅作离线兜底）。**要看到 `notes.json` 的内容，请用本地服务器或 GitHub Pages 打开。**
 
 ---
 

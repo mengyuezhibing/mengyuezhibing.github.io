@@ -115,7 +115,10 @@ window.SITE_CONFIG = {
     { time: '2024.10',     title: '在 GitHub 写下第一行代码', sub: 'START', desc: '把"想用就用"的小工具慢慢攒起来，开始持续地记录与开源。' }
   ],
 
-  /* ---------------- 6. 技术日志（tab 自动从 cate 生成） ---------------- */
+  /* ---------------- 6. 技术日志（tab 自动从 cate 生成） ----------------
+   * 正式内容放在 data/notes.json（站点运行时加载，改这一个文件即可）。
+   * 下面 notes 仅作离线 / file:// 直接打开 index.html 时的回退，平时不用动。 */
+  notesFile: 'data/notes.json',
   notes: [
     { cate: 'macOS', title: 'macOS 动态壁纸：用 AVPlayer + NSWindow 走过的坑', date: '2026-08-20', brief: '从窗口层级、屏保与前台 App 抢焦，到多屏分辨率适配，整理出做菜单栏壁纸应用必须踩过的那几道坎。', url: '' },
     { cate: 'macOS', title: 'SwiftUI 在 macOS 上做视频预览窗口的几种姿势',         date: '2026-07-14', brief: 'NSViewControllerRepresentable、AVPlayerLayer、Metal 渲染各自适合什么场景，以及如何避免离屏卡顿。', url: '' },

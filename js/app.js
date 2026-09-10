@@ -560,28 +560,34 @@
     if (window.__observeReveal) window.__observeReveal(box);
   })();
 
-  /* ========== ⑧-c 日志 + Tab ========== */
+  /* ========== ⑧-c 日志 + Tab ==========
+   * 数据优先来自独立文件 data/notes.json（运行时 fetch 加载），
+   * 方便日后只改这一个文件即可更新技术日志；离线 / file:// 打开时回退到 config.js 的 notes。
+   */
   (function notes() {
-    var tabs = $('#infoTabs'), grid = $('#infoGrid'), more = $('#infoMore');
-    var all = CFG.notes || [];
+    var grid = $('#infoGrid'), tabs = $('#infoTabs'), more = $('#infoMore');
     if (!grid) return;
 
-    var PAGE = 6, cur = 'ALL', shown = PAGE;
+    var PAGE = 6, cur = 'ALL', shown = PAGE, all = [];
 
-    var cates = ['ALL'];
-    all.forEach(function (n) { if (cates.indexOf(n.cate) < 0) cates.push(n.cate); });
+    function buildCates() {
+      var cates = ['ALL'];
+      all.forEach(function (n) { if (cates.indexOf(n.cate) < 0) cates.push(n.cate); });
+      return cates;
+    }
 
-    if (tabs) {
+    function buildTabs(cates) {
+      if (!tabs) return;
       tabs.innerHTML = cates.map(function (c) {
         return '<button class="info__tab' + (c === 'ALL' ? ' is-active' : '') + '" data-c="' + esc(c) + '" role="tab">' + esc(c === 'ALL' ? 'ALL' : c) + '</button>';
       }).join('');
-      tabs.addEventListener('click', function (e) {
+      tabs.onclick = function (e) {
         var b = e.target.closest('.info__tab');
         if (!b) return;
         cur = b.dataset.c; shown = PAGE;
         $$('.info__tab', tabs).forEach(function (x) { x.classList.toggle('is-active', x === b); });
         render();
-      });
+      };
     }
 
     function rows() { return cur === 'ALL' ? all : all.filter(function (n) { return n.cate === cur; }); }
@@ -605,8 +611,19 @@
       if (window.__observeReveal) window.__observeReveal(grid);
     }
 
-    if (more) more.addEventListener('click', function () { shown += PAGE; render(); });
-    render();
+    function init(list) {
+      all = list || [];
+      if (!all.length) { grid.innerHTML = '<p class="info__brief" style="padding:0 var(--gut)">暂无内容</p>'; return; }
+      buildTabs(buildCates());
+      if (more) more.addEventListener('click', function () { shown += PAGE; render(); });
+      render();
+    }
+
+    var file = (CFG && CFG.notesFile) || 'data/notes.json';
+    fetch(file)
+      .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (d) { init(Array.isArray(d) ? d : (d.notes || [])); })
+      .catch(function () { init(CFG.notes || []); });   // 离线 / file:// 回退到 config.js
   })();
 
   /* ========== ⑨ 首屏数据指标（取自 config.js） ========== */
