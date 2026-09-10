@@ -623,6 +623,8 @@
   (function model3d() {
     var cvs = $('#modelCanvas');
     if (!cvs) return;
+    /* 外部点云 JSON 地址（在 config.js 里配 model.url）；留空则用内置网格方块 */
+    var MODEL_URL = (CFG && CFG.model && CFG.model.url) || '';
     var ctx = cvs.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -685,7 +687,8 @@
         // 面法线旋转后的 z 分量 > 0 → 该面朝向观察者
         var nx = p[3] * cY + p[5] * sY;
         var nz = -p[3] * sY + p[5] * cY;
-        var front = (p[4] * sX + nz * cX) > 0;
+        /* 法线为 0 = 外部点云无面信息 → 不做背面剔除，全部按正面绘制 */
+        var front = (p[3] || p[4] || p[5]) ? ((p[4] * sX + nz * cX) > 0) : true;
 
         // 顶点旋转
         var x1 = p[0] * cY + p[2] * sY;
@@ -777,20 +780,60 @@
     cvs.addEventListener('pointercancel', endDrag);
     cvs.addEventListener('pointerleave', endDrag);
 
-    /* ---- 初始化 ---- */
-    pts = buildCube(reduced ? 16 : 28);
-    if (elPts) elPts.textContent = 'POINTS ' + pts.length;
+    /* ---- 数据源：JSON 点云 / 内置网格方块 ---- */
+    /* JSON 支持两种写法：[ [x,y,z], ... ] 或 { "points": [[x,y,z], ...] } */
+    function normalize(raw) {
+      if (!raw || !raw.length) return null;
+      var min = [1e9, 1e9, 1e9], max = [-1e9, -1e9, -1e9], i, k, p;
+      for (i = 0; i < raw.length; i++) {
+        p = raw[i];
+        for (k = 0; k < 3; k++) {
+          if (p[k] < min[k]) min[k] = p[k];
+          if (p[k] > max[k]) max[k] = p[k];
+        }
+      }
+      var span = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2]) || 1;
+      var dx = (max[0] + min[0]) / 2, dy = (max[1] + min[1]) / 2, dz = (max[2] + min[2]) / 2;
+      var out = [], s = 2 / span;      /* 归一化到 [-1, 1] */
+      for (i = 0; i < raw.length; i++) {
+        p = raw[i];
+        /* 法线填 0 → 渲染时视为"无面信息"，不做背面剔除 */
+        out.push([(p[0] - dx) * s, (p[1] - dy) * s, (p[2] - dz) * s, 0, 0, 0]);
+      }
+      return out;
+    }
+
+    var visible = false;
+    function tryStart() {
+      if (visible && pts.length && !running) {
+        running = true;
+        if (reduced) { draw(); running = false; } else { step(); }
+      }
+    }
+    function boot(list) {
+      if (!list || !list.length) return;
+      pts = list;
+      if (elPts) elPts.textContent = 'POINTS ' + pts.length;
+      tryStart();
+    }
+
     resize();
     window.addEventListener('resize', resize);
 
+    if (MODEL_URL) {
+      fetch(MODEL_URL)
+        .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+        .then(function (d) { return normalize(d && d.points ? d.points : d); })
+        .then(function (list) { boot(list || buildCube(reduced ? 16 : 28)); })
+        .catch(function () { boot(buildCube(reduced ? 16 : 28)); });
+    } else {
+      boot(buildCube(reduced ? 16 : 28));
+    }
+
     // 进入视口才跑 rAF，离开即停
     var io = new IntersectionObserver(function (es) {
-      if (es[0].isIntersecting) {
-        if (!running) {
-          running = true;
-          if (reduced) { draw(); running = false; } else { step(); }
-        }
-      } else { running = false; }
+      visible = es[0].isIntersecting;
+      if (visible) tryStart(); else running = false;
     }, { threshold: 0.05 });
     io.observe(cvs);
   })();
