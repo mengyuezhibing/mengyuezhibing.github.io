@@ -380,11 +380,12 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 .home{ position:relative; padding:clamp(5rem,10vw,9rem) 0 clamp(4rem,8vw,7rem); border-top:1px solid var(--line); }
 .home__head{ max-width:90rem; margin:0 auto; }
 
-.ops{ display:grid; grid-template-columns:minmax(18rem,22rem) 1fr; gap:clamp(1.5rem,3vw,3rem); max-width:90rem; margin:clamp(2.5rem,5vw,4rem) auto 0; padding:0 var(--gut); align-items:start; }
+.ops{ display:grid; grid-template-columns:minmax(18rem,22rem) 1fr; gap:clamp(1.5rem,3vw,3rem); max-width:90rem; margin:clamp(2.5rem,5vw,4rem) auto 0; padding:0 var(--gut); align-items:stretch; }
 
 /* ============ 左侧竖线菜单 ============ */
 .ops__list{
   position:relative;
+  display:flex; flex-direction:column;   /* 桌面版纵向排列并拉伸填满右栏高度 */
   padding-left:2.25rem;          /* 给竖线留位置 */
   border-left:1px solid var(--line);
 }
@@ -394,7 +395,10 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
   background:var(--line);
 }
 .ops__item{
-  position:relative; display:block; width:100%; text-align:left;
+  position:relative;
+  display:flex; flex-direction:column; justify-content:center;
+  flex:1 1 auto;                 /* 等分列表高度，与右侧面板同高 */
+  width:100%; text-align:left;
   padding:1.1rem 1rem 1.1rem 1rem;
   transition:transform .4s var(--ease-out);
 }
