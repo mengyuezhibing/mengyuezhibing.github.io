@@ -6,6 +6,13 @@
 
 ## 更新日志
 
+### v4 QQ 一键加好友
+
+- 顶部导航 GitHub 图标旁新增 **QQ 图标**（企鹅轮廓，悬停变沙绿）
+- 点击 QQ 图标：优先唤起 QQ 客户端，并弹出**加好友浮层**兜底
+- 浮层功能：大号号码展示、**复制号码**、**在 QQ 中打开**、Escape / 遮罩 / × 关闭
+- 联系区改成 `label + value` 双栏结构，邮箱主按钮改为 QQ 邮箱
+
 ### v3 左侧菜单栏与轮播调优
 
 - 新增**左侧固定菜单栏**（终末地风格）：贯穿竖线轨道 + 编号 + 名称，当前板块用金色高亮段标记，滚动自动跟随，与顶部导航双向同步，≥1200px 显示
@@ -90,6 +97,7 @@
 6. **左侧固定菜单栏**：贯穿竖线轨道 + 编号，当前板块金色高亮段，滚动跟随并同步顶部导航
 7. **作品轮播**（对应 `02-Operator`）：左侧竖线菜单 + 右侧应用界面自动轮播，8s 自动切换（间隔恒定），悬停暂停，支持左右按钮 / 指示点 / 键盘方向键 / 触摸滑动，菜单与轮播双向同步
 8. **日志 Tab**（对应 `04-Information`）：分类过滤 + 加载更多
+9. **QQ 一键加好友**：`tencent://AddContact/` 协议唤起客户端 + 浮层兜底（复制号码 / 打开），顶部图标与联系区双向联动
 
 ---
 
@@ -108,13 +116,15 @@ profile: {
   email: 'you@example.com', // 联系区主按钮（mailto）
   qq: '123456789',          // ← 顶部导航 QQ 图标的号码；留空则自动隐藏该图标
   location: 'China',
-  links: [                  // 页脚联系链接列表，可任意增删
-    { label: 'GitHub', url: 'https://github.com/octocat' },
-    { label: 'QQ 123456789', url: 'https://wpa.qq.com/msgrd?v=3&uin=123456789&site=qq&menu=yes' },
-    { label: 'QQ邮箱', url: 'mailto:you@example.com' }
+  links: [                  // 联系区链接列表，可任意增删
+    { label: 'GitHub', value: 'octocat',         url: 'https://github.com/octocat' },
+    { label: 'QQ',     value: '123456789',       type: 'qq' },          // type:'qq' → 点击弹「一键加好友」浮层
+    { label: 'QQ邮箱', value: 'you@example.com', url: 'mailto:you@example.com' }
   ]
 }
 ```
+
+>> `type: 'qq'` 的条目会走 `qqAddUrl()` 生成 `tencent://AddContact/...` 协议链接，并弹出浮层（含复制号码 / 在 QQ 中打开），没装 QQ 客户端的访客也能加好友。
 
 ### 2. 换作品
 
