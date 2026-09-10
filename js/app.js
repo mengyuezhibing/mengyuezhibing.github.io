@@ -673,7 +673,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      var fov = 3.4, scale = Math.min(W, H) * 0.44;
+      var fov = 3.6, scale = Math.min(W, H) * 0.30;
       var cY = Math.cos(rotY), sY = Math.sin(rotY);
       var cX = Math.cos(rotX), sX = Math.sin(rotX);
 
@@ -702,11 +702,11 @@
         o.z = z2;
         if (front) {                              // 正面：清晰、较大
           o.a = 0.6 + t * 0.4;
-          o.s = (1.7 + t * 2.3) * dpr;
+          o.s = (0.8 + t * 1.1) * dpr;
           o.f = 1;
         } else {                                  // 背面：隐约可见，提供纵深
-          o.a = 0.04 + t * 0.1;
-          o.s = (0.9 + t * 1.0) * dpr;
+          o.a = 0.32 + t * 0.34;
+          o.s = (0.65 + t * 0.75) * dpr;
           o.f = 0;
         }
         list.push(o);
@@ -778,7 +778,7 @@
     cvs.addEventListener('pointerleave', endDrag);
 
     /* ---- 初始化 ---- */
-    pts = buildCube(reduced ? 10 : 18);
+    pts = buildCube(reduced ? 16 : 28);
     if (elPts) elPts.textContent = 'POINTS ' + pts.length;
     resize();
     window.addEventListener('resize', resize);
