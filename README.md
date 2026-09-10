@@ -152,14 +152,51 @@ python3 -m http.server 5173
 # 打开 http://127.0.0.1:5173
 ```
 
-> 如需 GitHub 实时数据生效，请**通过 http 访问**而非 `file://` 打开（部分浏览器对 file 协议下的 fetch 有限制）。
+同一 WiFi 下的其他人也能访问，用本机局域网 IP：
+
+```bash
+ipconfig getifaddr en0        # 例：192.168.43.193
+# 别人访问 http://192.168.43.193:5173
+```
 
 ## 五、部署到 GitHub Pages
 
-1. 新建仓库 `<你的用户名>.github.io`
-2. 把本目录内容推上去
-3. Settings → Pages → Source 选 `Deploy from branch` / `main` / `/ (root)`
-4. 访问 `https://<你的用户名>.github.io`
+已配置为 `mengyuezhibing.github.io` 仓库，最终地址 `https://mengyuezhibing.github.io/`。
+
+### 首次部署
+
+1. 到 https://github.com/new 新建仓库 `mengyuezhibing.github.io`（**Public**，不要勾选任何初始化文件）
+2. 生成有 `repo` 权限的 token：https://github.com/settings/tokens/new → 勾选 `repo` → Generate
+3. 推送（`<TOKEN>` 换成刚生成的令牌）：
+
+```bash
+cd "作品展示网页"
+git push -u origin main
+# Username: mengyuezhibing
+# Password: <TOKEN>
+```
+
+4. 仓库名是 `<用户名>.github.io` 时会**自动启用 Pages**，等 1–2 分钟访问
+   `https://mengyuezhibing.github.io/`
+   （其他仓库名需手动到 Settings → Pages → Source 选 `main` / `/ (root)`）
+
+### 后续更新
+
+```bash
+git add -A && git commit -m "更新内容" && git push
+```
+
+### 国内网络注意
+
+`github.com` 直连不稳定时，命令行 git 不走系统代理，需显式指定：
+
+```bash
+# 单次推送带代理
+git -c http.proxy=http://127.0.0.1:7897 push
+
+# 或只对此仓库生效（推荐，端口按你代理软件的实际配置改）
+git config --local http.proxy http://127.0.0.1:7897
+```
 
 自定义域名可在仓库根目录加 `CNAME` 文件写入域名即可。
 
