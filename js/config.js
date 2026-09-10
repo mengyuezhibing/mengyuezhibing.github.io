@@ -15,10 +15,12 @@ window.SITE_CONFIG = {
     github: 'mengyuezhibing',
     email: '3444162072@qq.com',
     qq: '3444162072',
+    wechat: 'mgp1352467890',
     location: 'China',
     links: [
       { label: 'GitHub', value: 'mengyuezhibing',  url: 'https://github.com/mengyuezhibing' },
-      { label: 'QQ',     value: '3444162072',      type: 'qq', url: '' },
+      { label: 'QQ',     value: '3444162072',      type: 'qq',     url: '' },
+      { label: '微信',   value: 'mgp1352467890',   type: 'wechat', url: '' },
       { label: 'QQ邮箱', value: '3444162072@qq.com', url: 'mailto:3444162072@qq.com' }
     ]
   },

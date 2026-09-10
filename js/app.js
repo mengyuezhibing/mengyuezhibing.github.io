@@ -52,104 +52,134 @@
     var gh = $('#navGithub'); if (gh) gh.href = ghUrl;
     var cg = $('#contactGh'); if (cg) cg.href = ghUrl;
 
-    /* ---------- QQ 加好友 ---------- */
-    var QQ = p.qq;
+    /* ---------- QQ / 微信：资料卡浮层 ---------- */
+    var QQ = p.qq, WX = p.wechat;
     var isMobile = /Android|iPhone|iPad|iPod|Windows Phone|HarmonyOS|Mobile/i.test(navigator.userAgent);
 
-    // 唤起 QQ 加好友：桌面用 tencent:// 协议，移动端用 mqqwpa://
-    function qqAddUrl(num) {
+    // QQ 资料卡：移动端用 mqqapi 唤起资料卡，桌面端尝试 tencent://Card
+    function qqCardUrl(num) {
       return isMobile
-        ? 'mqqwpa://im/chat?chat_type=wpa&uin=' + num + '&version=1&src_type=web&web_src=oicqzone.com'
-        : 'tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=' + num + '&website=www.oicqzone.com';
+        ? 'mqqapi://card/show_pslcard?src_type=internal&version=1&uin=' + num +
+          '&card_type=person&source=web&_wv=1027'
+        : 'tencent://Card/?uin=' + num;
     }
+    // QQ 头像：腾讯公开 CDN，无需鉴权
+    function qqAvatar(num) { return 'https://q1.qlogo.cn/g?b=qq&nk=' + num + '&s=640'; }
 
-    // 浮层：兜底方案（没装 QQ / 协议被拦截时也能加）
-    (function qqPop() {
-      var pop = $('#qqPop');
-      if (!QQ || !pop) return;
-      var numEl = $('#qqPopNum'), copyBtn = $('#qqPopCopy'), openBtn = $('#qqPopOpen');
-      var tip = $('#qqPopTip');
-      numEl.textContent = QQ;
-      openBtn.href = qqAddUrl(QQ);
+    /* 联系浮层：QQ 展示资料卡，微信引导复制 */
+    (function contactPop() {
+      var pop = $('#cpop');
+      if (!pop || (!QQ && !WX)) return;
 
-      function open() {
+      var headEl = $('#cpopHead'), avatarEl = $('#cpopAvatar'), nameEl = $('#cpopName');
+      var idEl = $('#cpopId'), tipEl = $('#cpopTip');
+      var copyBtn = $('#cpopCopy'), openBtn = $('#cpopOpen');
+      var cur = null;
+
+      var PRESET = {
+        qq: function () {
+          headEl.textContent = '// QQ — PROFILE';
+          avatarEl.className = 'cpop__avatar cpop__avatar--qq';
+          avatarEl.innerHTML = '<img src="' + esc(qqAvatar(QQ)) +
+            '" alt="QQ 头像" loading="lazy" referrerpolicy="no-referrer">';
+          nameEl.textContent = 'QQ';
+          idEl.textContent = QQ;
+          tipEl.innerHTML = isMobile
+            ? '点击「查看资料卡」跳转到 QQ，直接打开个人主页'
+            : '点击「查看资料卡」唤起 QQ 查看主页资料；若未响应，可在 QQ 中搜索该号码';
+          copyBtn.querySelector('span').textContent = '复制 QQ 号';
+          openBtn.querySelector('span').textContent = '查看资料卡';
+          openBtn.href = qqCardUrl(QQ);
+          cur = { id: QQ, kind: 'qq' };
+        },
+        wechat: function () {
+          headEl.textContent = '// WECHAT';
+          avatarEl.className = 'cpop__avatar cpop__avatar--wx';
+          avatarEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8.9 3.2C4.5 3.2 1 6.3 1 10.1c0 2.2 1.3 4.1 3.3 5.4l-.8 2.5 2.9-1.5c.8.2 1.6.4 2.5.4h.6a5.5 5.5 0 0 1-.2-1.5c0-3.6 3.5-6.5 7.8-6.5.3 0 .6 0 .9.1-.9-3.2-4-5.8-9.1-5.8Zm12 8.4c0-2.9-2.9-5.2-6.5-5.2s-6.5 2.3-6.5 5.2 2.9 5.2 6.5 5.2c.8 0 1.5-.1 2.2-.3l2.2 1.1-.6-1.9c1.6-1 2.7-2.4 2.7-4.1Z"/></svg>';
+          nameEl.textContent = '微信';
+          idEl.textContent = WX;
+          tipEl.innerHTML = '复制微信号后打开微信 → 添加朋友 → 搜索该号码，即可看到主页';
+          copyBtn.querySelector('span').textContent = '复制微信号';
+          openBtn.querySelector('span').textContent = '打开微信';
+          openBtn.href = 'weixin://';
+          cur = { id: WX, kind: 'wechat' };
+        }
+      };
+
+      function open(kind) {
+        if (!PRESET[kind]) return;
+        PRESET[kind]();
         pop.hidden = false;
         document.body.classList.add('is-locked');
-        if (copyBtn) copyBtn.querySelector('span').textContent = '复制号码';
-        if (tip) tip.textContent = isMobile
-          ? '点击「在 QQ 中打开」直接发起好友申请，或长按上方号码复制'
-          : '复制号码后用 QQ 搜索添加，或点击下方按钮唤起 QQ 客户端';
       }
       function close() {
         pop.hidden = true;
         document.body.classList.remove('is-locked');
       }
-      window.__openQQPop = open;
+      window.__contact = open;
 
-      $$('[data-qq-close]', pop).forEach(function (el) { el.addEventListener('click', close); });
+      $$('[data-cpop-close]', pop).forEach(function (el) { el.addEventListener('click', close); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && !pop.hidden) close();
       });
 
-      // 复制号码
+      // 复制号码 / 微信号
       if (copyBtn) copyBtn.addEventListener('click', function () {
-        var label = copyBtn.querySelector('span');
+        if (!cur) return;
+        var label = copyBtn.querySelector('span'), old = label.textContent;
         var ok = function () {
           label.textContent = '已复制 ✓';
-          setTimeout(function () { label.textContent = '复制号码'; }, 1800);
+          setTimeout(function () { label.textContent = old; }, 1800);
         };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(QQ).then(ok, fallback);
-        } else { fallback(); }
-        function fallback() {
+        var fallback = function () {
           var ta = document.createElement('textarea');
-          ta.value = QQ;
+          ta.value = cur.id;
           ta.setAttribute('readonly', '');
           ta.style.cssText = 'position:fixed;top:-999px;opacity:0';
           document.body.appendChild(ta);
           ta.select();
-          try { document.execCommand('copy'); ok(); } catch (e) { /* 忽略 */ }
+          try { document.execCommand('copy'); ok(); } catch (err) { /* 忽略 */ }
           document.body.removeChild(ta);
-        }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cur.id).then(ok, fallback);
+        } else { fallback(); }
       });
     })();
 
-    // 顶部导航 QQ 图标：点击直接唤起加好友，同时弹出兜底浮层
-    var qqIcon = $('#navQQ');
-    if (qqIcon && QQ) {
-      qqIcon.title = 'QQ: ' + QQ + '　点击加好友';
-      qqIcon.addEventListener('click', function (e) {
+    // 顶部图标：QQ / 微信
+    [['#navQQ', 'qq', QQ], ['#navWX', 'wechat', WX]].forEach(function (it) {
+      var el = $(it[0]);
+      if (!el) return;
+      if (!it[2]) { el.style.display = 'none'; return; }
+      el.setAttribute('title', (it[1] === 'qq' ? 'QQ' : '微信') + ': ' + it[2]);
+      el.addEventListener('click', function (e) {
         e.preventDefault();
-        try { window.location.href = qqAddUrl(QQ); } catch (err) { /* 协议不支持则忽略 */ }
-        setTimeout(function () { if (window.__openQQPop) window.__openQQPop(); }, 260);
+        if (window.__contact) window.__contact(it[1]);
       });
-    } else if (qqIcon) {
-      qqIcon.style.display = 'none';
-    }
+    });
 
     var cm = $('#contactMail');
     if (cm && p.email) { cm.href = 'mailto:' + p.email; cm.querySelector('span').textContent = p.email; }
 
-    // 底部联系方式（label + 具体值）
+    // 底部联系方式
     var links = $('#contactLinks');
     if (links && Array.isArray(p.links)) {
       links.innerHTML = p.links.map(function (l) {
-        var isQQ = l.type === 'qq';
-        var href = isQQ ? (QQ ? qqAddUrl(QQ) : '#') : (l.url || '#');
-        return '<li class="final__link' + (isQQ ? ' is-qq' : '') + '">' +
-          '<a href="' + esc(href) + '"' +
-            (isQQ ? ' data-qq-open' : ' target="_blank" rel="noreferrer"') + '>' +
+        var kind = l.type;
+        return '<li class="final__link' + (kind ? ' is-' + kind : '') + '">' +
+          '<a href="' + esc(kind ? '#' : (l.url || '#')) + '"' +
+            (kind ? ' data-contact="' + kind + '"' : ' target="_blank" rel="noreferrer"') + '>' +
             '<span class="final__linkLabel">' + esc(l.label) + '</span>' +
             '<span class="final__linkValue">' + esc(l.value || l.label) + '</span>' +
           '</a></li>';
       }).join('');
 
-      // 底部 QQ：优先弹浮层（含复制号码，避免游客没装客户端时无从下手）
-      $$('[data-qq-open]', links).forEach(function (a) {
+      $$('[data-contact]', links).forEach(function (a) {
         a.addEventListener('click', function (e) {
-          if (!window.__openQQPop) return;      // 没配置 QQ 就走默认链接
+          if (!window.__contact) return;
           e.preventDefault();
-          window.__openQQPop();
+          window.__contact(a.dataset.contact);
         });
       });
     }

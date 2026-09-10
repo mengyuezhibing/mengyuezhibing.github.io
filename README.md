@@ -6,12 +6,19 @@
 
 ## 更新日志
 
+### v5 微信 + 统一资料卡浮层
+
+- 顶部导航新增**微信图标**（微信绿悬停色），与 GitHub / QQ 并排
+- 浮层重构为统一的 `cpop` 资料卡：
+  - **QQ**：自动拉取真实头像（`q1.qlogo.cn`），按钮唤起 `tencent://Card`（移动端 `mqqapi://card`）
+  - **微信**：微信绿图标 + 微信号，按钮唤起 `weixin://`
+- 联系区支持 `type: 'qq' | 'wechat'` 声明式配置，`label + value` 双栏展示
+
 ### v4 QQ 一键加好友
 
-- 顶部导航 GitHub 图标旁新增 **QQ 图标**（企鹅轮廓，悬停变沙绿）
-- 点击 QQ 图标：优先唤起 QQ 客户端，并弹出**加好友浮层**兜底
-- 浮层功能：大号号码展示、**复制号码**、**在 QQ 中打开**、Escape / 遮罩 / × 关闭
-- 联系区改成 `label + value` 双栏结构，邮箱主按钮改为 QQ 邮箱
+- 顶部导航 GitHub 图标旁新增 **QQ 图标**（企鹅轮廓）
+- 点击 QQ 图标弹出加好友浮层：大号号码、复制号码、在 QQ 中打开、Escape / 遮罩 / × 关闭
+- 联系区改成 `label + value` 双栏结构
 
 ### v3 左侧菜单栏与轮播调优
 
@@ -97,7 +104,7 @@
 6. **左侧固定菜单栏**：贯穿竖线轨道 + 编号，当前板块金色高亮段，滚动跟随并同步顶部导航
 7. **作品轮播**（对应 `02-Operator`）：左侧竖线菜单 + 右侧应用界面自动轮播，8s 自动切换（间隔恒定），悬停暂停，支持左右按钮 / 指示点 / 键盘方向键 / 触摸滑动，菜单与轮播双向同步
 8. **日志 Tab**（对应 `04-Information`）：分类过滤 + 加载更多
-9. **QQ 一键加好友**：`tencent://AddContact/` 协议唤起客户端 + 浮层兜底（复制号码 / 打开），顶部图标与联系区双向联动
+9. **联系资料卡浮层**：QQ（真实头像 + `tencent://Card`）与微信（`weixin://` + 复制号引导）统一浮层，支持 Escape / 遮罩 / × 关闭，顶部图标与联系区双向联动
 
 ---
 
@@ -114,17 +121,22 @@ profile: {
   role: 'FRONTEND / CREATIVE DEV',
   github: 'octocat',        // ← 改成你的 GitHub 用户名
   email: 'you@example.com', // 联系区主按钮（mailto）
-  qq: '123456789',          // ← 顶部导航 QQ 图标的号码；留空则自动隐藏该图标
+  qq: '123456789',          // ← 顶部导航 QQ 图标；留空则自动隐藏该图标
+  wechat: 'your_wechat_id',  // ← 顶部导航微信图标；留空则自动隐藏该图标
   location: 'China',
   links: [                  // 联系区链接列表，可任意增删
-    { label: 'GitHub', value: 'octocat',         url: 'https://github.com/octocat' },
-    { label: 'QQ',     value: '123456789',       type: 'qq' },          // type:'qq' → 点击弹「一键加好友」浮层
-    { label: 'QQ邮箱', value: 'you@example.com', url: 'mailto:you@example.com' }
+    { label: 'GitHub', value: 'octocat',          url: 'https://github.com/octocat' },
+    { label: 'QQ',     value: '123456789',        type: 'qq' },          // 点击弹 QQ 资料卡
+    { label: '微信',   value: 'your_wechat_id',   type: 'wechat', url: '' }, // 点击弹微信浮层
+    { label: 'QQ邮箱', value: 'you@example.com',  url: 'mailto:you@example.com' }
   ]
 }
 ```
 
->> `type: 'qq'` 的条目会走 `qqAddUrl()` 生成 `tencent://AddContact/...` 协议链接，并弹出浮层（含复制号码 / 在 QQ 中打开），没装 QQ 客户端的访客也能加好友。
+>> `type: 'qq'` / `type: 'wechat'` 的条目会走 `contactPop()` 弹出统一资料卡浮层：
+>> - **QQ**：从 `q1.qlogo.cn` 拉取真实头像，按钮唤起 `tencent://Card`（移动端 `mqqapi://card`）
+>> - **微信**：显示微信绿图标 + 微信号，按钮唤起 `weixin://`，引导复制号码搜索添加
+>> - 两者都支持复制号码、Escape / 遮罩 / × 关闭，未装客户端的访客也能手动添加
 
 ### 2. 换作品
 

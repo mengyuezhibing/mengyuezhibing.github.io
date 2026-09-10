@@ -218,16 +218,19 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 
 .nav__side{ display:flex; align-items:center; gap:.6rem; }
 .nav__gh,
-.nav__qq{
+.nav__qq,
+.nav__wx{
   display:inline-flex; align-items:center; gap:.5rem;
   border:1px solid var(--line-strong);
   padding:.5rem .9rem;
   transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease);
 }
 .nav__gh svg,
-.nav__qq svg{ width:1rem; height:1rem; fill:currentColor; stroke:none; }
+.nav__qq svg,
+.nav__wx svg{ width:1rem; height:1rem; fill:currentColor; stroke:none; }
 .nav__gh:hover{ background:var(--accent); color:#fff8e1; border-color:var(--accent); }
-.nav__qq:hover{ background:var(--accent-2); color:#fff8e1; border-color:var(--accent-2); }
+.nav__qq:hover{ background:var(--accent-3); color:#fff8e1; border-color:var(--accent-3); }
+.nav__wx:hover{ background:#3f9c5a; color:#fff8e1; border-color:#3f9c5a; }
 .nav__burger{ display:none; flex-direction:column; gap:4px; padding:.5rem; }
 .nav__burger i{ display:block; width:22px; height:1.5px; background:var(--txt); transition:transform .3s var(--ease),opacity .3s; }
 
@@ -656,7 +659,8 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
   background:rgba(184,144,42,.09);
   transform:translateY(-2px);
 }
-.final__link.is-qq a:hover{ border-color:var(--accent-2); background:rgba(125,162,102,.1); }
+.final__link.is-qq a:hover{ border-color:var(--accent-3); background:rgba(91,74,31,.1); }
+.final__link.is-wechat a:hover{ border-color:#3f9c5a; background:rgba(63,156,90,.1); }
 .final__linkLabel{
   font-family:var(--f-mono); font-size:.5625rem; letter-spacing:.22em;
   text-transform:uppercase; color:var(--txt-3);
@@ -667,53 +671,76 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
   transition:color .3s var(--ease);
 }
 .final__link a:hover .final__linkValue{ color:var(--accent); }
-.final__link.is-qq a:hover .final__linkValue{ color:var(--accent-2); }
+.final__link.is-qq a:hover .final__linkValue{ color:var(--accent-3); }
+.final__link.is-wechat a:hover .final__linkValue{ color:#3f9c5a; }
 
 /* ==========================================================
-   QQ 加好友浮层
+   联系浮层（QQ 资料卡 / 微信）
    ========================================================== */
-.qqpop{
+.cpop{
   position:fixed; inset:0; z-index:300;
   display:grid; place-items:center;
   padding:var(--gut);
 }
-.qqpop[hidden]{ display:none; }
-.qqpop__mask{
+.cpop[hidden]{ display:none; }
+.cpop__mask{
   position:absolute; inset:0;
   background:rgba(28,36,22,.58);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  animation:qqFade .3s var(--ease);
+  animation:cpopFade .3s var(--ease);
 }
-@keyframes qqFade{ from{ opacity:0; } to{ opacity:1; } }
-.qqpop__box{
+@keyframes cpopFade{ from{ opacity:0; } to{ opacity:1; } }
+.cpop__box{
   position:relative;
-  width:min(92vw,24rem);
+  width:min(92vw,23rem);
   padding:2.25rem 1.75rem 1.75rem;
   text-align:center;
   background:linear-gradient(180deg,#fbf9ec,var(--bg-2));
   border:1px solid var(--line-strong);
   box-shadow:0 30px 70px -30px rgba(28,36,22,.6);
   clip-path:polygon(0 0,calc(100% - 1rem) 0,100% 1rem,100% 100%,1rem 100%,0 calc(100% - 1rem));
-  animation:qqUp .42s var(--ease-out);
+  animation:cpopUp .42s var(--ease-out);
 }
-@keyframes qqUp{ from{ opacity:0; transform:translateY(18px) scale(.98); } to{ opacity:1; transform:none; } }
-.qqpop__close{
+@keyframes cpopUp{ from{ opacity:0; transform:translateY(18px) scale(.98); } to{ opacity:1; transform:none; } }
+.cpop__close{
   position:absolute; right:.85rem; top:.6rem;
   width:2rem; height:2rem; line-height:1;
   font-size:1.4rem; color:var(--txt-3);
   transition:color .3s var(--ease),transform .35s var(--ease-out);
 }
-.qqpop__close:hover{ color:var(--accent); transform:rotate(90deg); }
-.qqpop__head{ color:var(--accent); margin-bottom:1.15rem; }
-.qqpop__num{
-  font-family:var(--f-display); font-weight:700;
-  font-size:clamp(1.75rem,5vw,2.5rem); letter-spacing:.05em;
-  color:var(--txt);
-  user-select:all;                 /* 方便长按/双击全选复制 */
+.cpop__close:hover{ color:var(--accent); transform:rotate(90deg); }
+.cpop__head{ color:var(--accent); margin-bottom:1.25rem; }
+
+/* 头像 / 标识 */
+.cpop__avatar{
+  width:6.25rem; height:6.25rem; margin:0 auto 1.1rem;
+  display:grid; place-items:center;
+  border-radius:50%;
+  border:1px solid var(--line-strong);
+  background:var(--bg-3);
+  overflow:hidden;
+  box-shadow:0 16px 36px -20px rgba(28,36,22,.65);
 }
-.qqpop__tip{ margin-top:.9rem; color:var(--txt-3); font-size:.8125rem; line-height:1.7; }
-.qqpop__actions{
+.cpop__avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.cpop__avatar--wx{ background:linear-gradient(140deg,#7da266,#3f5a2c); color:#f3f1e2; border-color:transparent; }
+.cpop__avatar--wx svg{ width:3rem; height:3rem; fill:currentColor; stroke:none; }
+
+.cpop__name{
+  font-family:var(--f-display); font-weight:700;
+  font-size:1.125rem; letter-spacing:.04em; color:var(--txt);
+}
+.cpop__id{
+  margin-top:.4rem;
+  font-family:var(--f-mono); font-weight:700;
+  font-size:clamp(1.25rem,4.2vw,1.625rem); letter-spacing:.04em;
+  color:var(--accent);
+  user-select:all;                 /* 方便长按/双击全选复制 */
+  word-break:break-all;
+}
+.cpop__tip{ margin-top:1rem; color:var(--txt-3); font-size:.8125rem; line-height:1.7; }
+.cpop__tip b{ color:var(--txt-2); font-weight:600; }
+.cpop__actions{
   display:flex; justify-content:center; flex-wrap:wrap;
   gap:.75rem; margin-top:1.5rem;
 }
@@ -762,9 +789,11 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
   .nav__link{ padding:.9rem .25rem; border-bottom:1px solid var(--line); font-size:1.0625rem; }
   .nav__link::after{ display:none; }
   .nav__gh span,
-  .nav__qq span{ display:none; }
+  .nav__qq span,
+  .nav__wx span{ display:none; }
   .nav__gh,
-  .nav__qq{ padding:.5rem .6rem; }
+  .nav__qq,
+  .nav__wx{ padding:.5rem .62rem; }
   .cal__line::before{ left:calc(var(--gut) + 4px); }
   .cal__item{ grid-template-columns:1fr; gap:.5rem; padding-left:1.75rem; }
   .cal__time{ text-align:left; }

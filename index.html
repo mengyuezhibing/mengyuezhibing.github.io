@@ -74,9 +74,13 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.4-3.88-1.4-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.79 1.07.79 2.16v3.2c0 .3.2.66.8.55A11.5 11.5 0 0 0 12 .5Z"/></svg>
       <span>GITHUB</span>
     </a>
-    <a class="nav__qq mono" id="navQQ" href="#" target="_blank" rel="noreferrer" title="QQ 联系">
+    <a class="nav__qq mono" id="navQQ" href="#" target="_blank" rel="noreferrer" title="QQ">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.1c-3.2 0-5.3 2.4-5.3 5.5 0 .9-.2 1.6-.6 2.2-1 1.5-1.9 3.4-1.9 5 0 .9.3 1.7.8 2.2-.3.6-.5 1.3-.5 2.1 0 1.7 1.2 3.1 2.8 3.1h9.4c1.6 0 2.8-1.4 2.8-3.1 0-.8-.2-1.5-.5-2.1.5-.5.8-1.3.8-2.2 0-1.6-.9-3.5-1.9-5-.4-.6-.6-1.3-.6-2.2 0-3.1-2.1-5.5-5.3-5.5Zm-1.9 5.6a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Zm3.8 0a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z"/></svg>
       <span>QQ</span>
+    </a>
+    <a class="nav__wx mono" id="navWX" href="#" rel="noreferrer" title="微信">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.9 3.2C4.5 3.2 1 6.3 1 10.1c0 2.2 1.3 4.1 3.3 5.4l-.8 2.5 2.9-1.5c.8.2 1.6.4 2.5.4h.6a5.5 5.5 0 0 1-.2-1.5c0-3.6 3.5-6.5 7.8-6.5.3 0 .6 0 .9.1-.9-3.2-4-5.8-9.1-5.8Zm12 8.4c0-2.9-2.9-5.2-6.5-5.2s-6.5 2.3-6.5 5.2 2.9 5.2 6.5 5.2c.8 0 1.5-.1 2.2-.3l2.2 1.1-.6-1.9c1.6-1 2.7-2.4 2.7-4.1Z"/></svg>
+      <span>WECHAT</span>
     </a>
     <button class="nav__burger" id="navBurger" aria-label="菜单"><i></i><i></i><i></i></button>
   </div>
@@ -232,17 +236,24 @@
   </div>
 </footer>
 
-<!-- ============ QQ 加好友浮层 ============ -->
-<div class="qqpop" id="qqPop" hidden>
-  <div class="qqpop__mask" data-qq-close></div>
-  <div class="qqpop__box" role="dialog" aria-label="添加 QQ 好友">
-    <button class="qqpop__close" data-qq-close aria-label="关闭">&times;</button>
-    <div class="qqpop__head mono">// ADD FRIEND — QQ</div>
-    <div class="qqpop__num" id="qqPopNum">—</div>
-    <p class="qqpop__tip" id="qqPopTip">复制号码后用 QQ 搜索添加，或点击下方按钮唤起 QQ 客户端</p>
-    <div class="qqpop__actions">
-      <button class="btn btn--primary btn--sm" id="qqPopCopy" type="button"><span>复制号码</span></button>
-      <a class="btn btn--ghost btn--sm" id="qqPopOpen" href="#"><span>在 QQ 中打开</span></a>
+<!-- ============ 联系浮层（QQ / 微信） ============ -->
+<div class="cpop" id="cpop" hidden>
+  <div class="cpop__mask" data-cpop-close></div>
+  <div class="cpop__box" role="dialog" aria-label="联系方式">
+    <button class="cpop__close" data-cpop-close aria-label="关闭">&times;</button>
+
+    <div class="cpop__head mono" id="cpopHead">// CONTACT</div>
+
+    <div class="cpop__avatar" id="cpopAvatar"></div>
+
+    <div class="cpop__name" id="cpopName">—</div>
+    <div class="cpop__id"><span id="cpopId">—</span></div>
+
+    <p class="cpop__tip" id="cpopTip"></p>
+
+    <div class="cpop__actions">
+      <button class="btn btn--primary btn--sm" id="cpopCopy" type="button"><span>复制</span></button>
+      <a class="btn btn--ghost btn--sm" id="cpopOpen" href="#"><span>打开</span></a>
     </div>
   </div>
 </div>
