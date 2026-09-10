@@ -6,10 +6,17 @@
 
 ## 更新日志
 
+### v7 模型调优 + 多格式转换
+
+- 点云不再省略背面（全部绘制），旋转时模型完整可见
+- 点更小、更密：网格密度 28→34 格/面（约 7000 点），单点尺寸下调约 35%
+- 模型整体缩小（缩放 0.30→0.26），旋转展示不溢出
+- 转换器 `tools/model2json.py` 新增 `trimesh` 路径：支持 `.glb/.gltf/.stl/.fbx/.dae/.off/.3mf` 在网格表面均匀采样
+
 ### v6 点云 3D 模型板块
 
 - 新增「模型」栏目（#model，编号 03），导航同步插入并重新编号
-- Canvas 手写 3D：六面网格点云 + 背面剔除，2166 个方块粒子，零依赖
+- Canvas 手写 3D：六面网格点云（约 7000 个方块粒子），零依赖
 - 拖拽旋转 + 惯性衰减、自动慢速旋转、HUD 实时读数
 - 进入视口才跑 rAF，离开即停；支持 prefers-reduced-motion
 
@@ -72,7 +79,7 @@
 6. **左侧固定菜单栏**：贯穿竖线轨道 + 编号，当前板块金色高亮段，滚动跟随并同步顶部导航
 7. **作品轮播**：左侧竖线菜单 + 右侧应用界面自动轮播，8s 自动切换（间隔恒定），悬停暂停，支持左右按钮 / 指示点 / 键盘方向键 / 触摸滑动，菜单与轮播双向同步
 8. **日志 Tab**（对应 `04-Information`）：分类过滤 + 加载更多
-9. **点云 3D 模型**：Canvas 手写透视投影 + 背面剔除，拖拽旋转带惯性；支持加载外部 JSON 点云（`tools/model2json.py` 转换 OBJ/PLY），进入视口才渲染
+9. **点云 3D 模型**：Canvas 手写透视投影，背面也完整绘制（无剔除），点小且密，拖拽旋转带惯性；支持加载外部 JSON 点云（`tools/model2json.py` 转换 OBJ / PLY / GLB / GLTF / STL 等），进入视口才渲染
 10. **联系资料卡浮层**：QQ（真实头像 + `tencent://Card`）与微信（`weixin://` + 复制号引导）统一浮层，支持 Escape / 遮罩 / × 关闭，顶部图标与联系区双向联动
 
 ---
@@ -149,11 +156,18 @@ theme: { bg: '#191919', accent: '#fffa00', accent2: '#00ffa2', accent3: '#ff1aac
 **1. 用转换脚本生成 JSON 点云**
 
 ```bash
+# 零依赖路径：直接解析顶点 / 三角面撒点
 python3 tools/model2json.py 你的模型.obj -o assets/models/xxx.json -n 20000
 python3 tools/model2json.py 你的模型.ply -o assets/models/xxx.json
+
+# trimesh 路径：在网格表面均匀采样（需要 pip install trimesh）
+python3 tools/model2json.py 你的模型.glb -o assets/models/xxx.json -n 40000
+python3 tools/model2json.py 你的模型.gltf -o assets/models/xxx.json
+python3 tools/model2json.py 你的模型.stl -o assets/models/xxx.json
 ```
 
-支持 `.obj` `.ply` `.xyz` `.txt` `.csv`；`-n` 限制最多点数（建议 1~3 万，脚本零依赖）。
+- 零依赖支持 `.obj` `.ply` `.xyz` `.txt` `.csv`（`-n` 限制最多点数，建议 1~3 万）
+- `trimesh` 路径额外支持 `.glb` `.gltf` `.stl` `.fbx` `.dae` `.off` `.3mf`，会在模型表面均匀采样生成点云
 
 **2. 在 `config.js` 里填路径**
 
@@ -170,9 +184,17 @@ JSON 支持两种写法：
 
 坐标**无需预处理**，会自动居中并归一化到 `[-1,1]`；加载失败会自动回退到内置方块。
 
-> STEP / IGES / FBX 等格式请先用
-> [3d-model-convert-to-gltf](https://github.com/wangerzi/3d-model-convert-to-gltf)
-> 或 Blender 转成 OBJ / PLY，再跑上面的脚本。
+**开源格式转换资源（GitHub）**
+
+- [mengyuezhibing 本仓库 `tools/model2json.py`](tools/model2json.py)：OBJ/PLY/XYZ → JSON，零依赖；GLB/GLTF/STL → JSON（依赖 trimesh）
+- [trimesh](https://github.com/mikedh/trimesh)：Python 三维网格库，提供 `sample_surface` 表面采样，是本站 `.glb/.gltf/.stl` 转换的底层引擎
+- [mikedh/trimesh](https://github.com/mikedh/trimesh) · [pygltflib](https://github.com/KhronosGroup/pygltflib)：读写 glTF/GLB
+- [mixbits/GLBtoOBJ](https://github.com/mixbits/GLBtoOBJ)：GLB → OBJ（基于 trimesh，可继续用本站脚本采样）
+- [Brodi-g/batch-3d-converter](https://github.com/Brodi-g/batch-3d-converter)：批量互转 OBJ/GLB/GLTF 的桌面工具
+- [wangerzi/3d-model-convert-to-gltf](https://github.com/wangerzi/3d-model-convert-to-gltf)：STEP/IGES/FBX 等工程格式 → glTF
+- Blender（开源）导入任意格式后导出 OBJ/PLY/GLB，再交给本站脚本
+
+> 用法：先把模型转成 **OBJ / PLY / GLB** 任一，再跑上面的 `model2json.py` 得到 JSON 点云，最后在 `config.js` 的 `model.url` 填入路径即可。
 
 ---
 

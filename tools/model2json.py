@@ -4,9 +4,14 @@
 
 用法:
     python3 tools/model2json.py model.obj -o assets/models/xxx.json
-    python3 tools/model2json.py model.ply -o out.json -n 20000   # 最多采样 2 万点
+    python3 tools/model2json.py model.glb -o out.json -n 20000   # 最多采样 2 万点
+    python3 tools/model2json.py model.ply -o out.json            # 保留原始顶点
 
-支持: .obj .ply .xyz .txt .csv（纯坐标，每行 3 个数）
+支持:
+    .obj  .ply  .xyz/.txt/.csv  —— 零依赖，脚本自带解析
+    .glb .gltf .stl .fbx ...   —— 借助 trimesh 在网格表面均匀采样
+                                  pip install trimesh（或 pip install trimesh[easy]）
+
 输出: {"points": [[x,y,z], ...], "count": N}
 """
 
@@ -137,9 +142,29 @@ def read_xyz(path):
     return pts
 
 
+def read_mesh_trimesh(path, n=40000):
+    """用 trimesh 在网格表面均匀采样（GLB/GLTF/STL/FBX 等）。
+    依赖：pip install trimesh。采样点数 n 控制密度。"""
+    try:
+        import trimesh
+    except ImportError:
+        raise SystemExit(
+            "读取 %s 需要 trimesh：\n"
+            "  pip install trimesh\n"
+            "（或先转成 OBJ/PLY：用 Blender / FBX2glTF / mixbits/GLBtoOBJ 等开源工具）" % path
+        )
+    mesh = trimesh.load(path, force="mesh")
+    if hasattr(mesh, "split"):  # 可能是多网格场景
+        mesh = mesh.split(only_watertight=False)
+        if isinstance(mesh, list) and mesh:
+            mesh = mesh[0]
+    samples = trimesh.sample.sample_surface(mesh, n)[0]
+    return samples.tolist()
+
+
 def main():
     ap = argparse.ArgumentParser(description="3D 模型 → JSON 点云")
-    ap.add_argument("input", help="输入文件 (.obj/.ply/.xyz/.txt/.csv)")
+    ap.add_argument("input", help="输入文件 (.obj/.ply/.xyz/.txt/.csv/.glb/.gltf/.stl/.fbx)")
     ap.add_argument("-o", "--out", required=True, help="输出 JSON 路径")
     ap.add_argument("-n", "--max", type=int, default=0, help="最多保留点数（0=全部）")
     args = ap.parse_args()
@@ -151,8 +176,10 @@ def main():
         pts = read_ply(args.input)
     elif ext in (".xyz", ".txt", ".csv", ".pts"):
         pts = read_xyz(args.input)
+    elif ext in (".glb", ".gltf", ".stl", ".fbx", ".dae", ".off", ".3mf"):
+        pts = read_mesh_trimesh(args.input, n=40000)
     else:
-        raise SystemExit("不支持的格式: %s（请转 OBJ/PLY/XYZ）" % ext)
+        raise SystemExit("不支持的格式: %s（请转 OBJ/PLY/XYZ/GLB）" % ext)
 
     if not pts:
         raise SystemExit("没有解析到任何顶点")

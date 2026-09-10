@@ -704,7 +704,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      var fov = 6.0, scale = Math.min(W, H) * 0.30;
+      var fov = 6.0, scale = Math.min(W, H) * 0.26;
       var cY = Math.cos(rotY), sY = Math.sin(rotY);
       var cX = Math.cos(rotX), sX = Math.sin(rotX);
 
@@ -733,8 +733,8 @@
         o.y = cy + y1 * k * scale;
         o.z = z2;
         /* 颜色 / 透明度 / 尺寸全部按深度平滑变化，旋转时不再有硬切换 */
-        o.a = 0.15 + t * 0.85;                   // 远 0.15 → 近 1.0
-        o.s = 1.0 + t * 3.0;                     // 远 1.0 → 近 4.0
+        o.a = 0.18 + t * 0.82;                   // 远 0.18 → 近 1.0
+        o.s = 0.55 + t * 1.25;                   // 远 0.55 → 近 1.8（点更小、更密）
         o.t = t;                                  // 保存深度，绘制时选色阶 sprite
         o.f = front ? 1 : 0;
         list.push(o);
@@ -747,7 +747,7 @@
         /* 按深度选色阶 sprite（10 档连续渐变），无颜色跳变 */
         var idx = Math.min(STEPS - 1, Math.max(0, Math.floor(q.t * STEPS)));
         var sp = SPRITES[idx];
-        var sz = q.s * 3.4;
+        var sz = q.s * 2.2;
         ctx.globalAlpha = Math.min(1, q.a);
         ctx.drawImage(sp, q.x - sz / 2, q.y - sz / 2, sz, sz);
       }
@@ -851,10 +851,10 @@
       fetch(MODEL_URL)
         .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
         .then(function (d) { return normalize(d && d.points ? d.points : d); })
-        .then(function (list) { boot(list || buildCube(reduced ? 16 : 28)); })
-        .catch(function () { boot(buildCube(reduced ? 16 : 28)); });
+        .then(function (list) { boot(list || buildCube(reduced ? 18 : 34)); })
+        .catch(function () { boot(buildCube(reduced ? 18 : 34)); });
     } else {
-      boot(buildCube(reduced ? 16 : 28));
+      boot(buildCube(reduced ? 18 : 34));
     }
 
     // 进入视口才跑 rAF，离开即停
