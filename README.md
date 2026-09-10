@@ -72,7 +72,7 @@
 6. **左侧固定菜单栏**：贯穿竖线轨道 + 编号，当前板块金色高亮段，滚动跟随并同步顶部导航
 7. **作品轮播**：左侧竖线菜单 + 右侧应用界面自动轮播，8s 自动切换（间隔恒定），悬停暂停，支持左右按钮 / 指示点 / 键盘方向键 / 触摸滑动，菜单与轮播双向同步
 8. **日志 Tab**（对应 `04-Information`）：分类过滤 + 加载更多
-9. **点云 3D 模型**：Canvas 手写透视投影 + 背面剔除，拖拽旋转带惯性，进入视口才渲染
+9. **点云 3D 模型**：Canvas 手写透视投影 + 背面剔除，拖拽旋转带惯性；支持加载外部 JSON 点云（`tools/model2json.py` 转换 OBJ/PLY），进入视口才渲染
 10. **联系资料卡浮层**：QQ（真实头像 + `tencent://Card`）与微信（`weixin://` + 复制号引导）统一浮层，支持 Escape / 遮罩 / × 关闭，顶部图标与联系区双向联动
 
 ---
@@ -139,6 +139,40 @@ profile: {
 ```js
 theme: { bg: '#191919', accent: '#fffa00', accent2: '#00ffa2', accent3: '#ff1aac' }
 ```
+
+---
+
+### 5. 换 3D 模型
+
+模型板块默认渲染内置的网格方块点云。换成自己的模型分两步：
+
+**1. 用转换脚本生成 JSON 点云**
+
+```bash
+python3 tools/model2json.py 你的模型.obj -o assets/models/xxx.json -n 20000
+python3 tools/model2json.py 你的模型.ply -o assets/models/xxx.json
+```
+
+支持 `.obj` `.ply` `.xyz` `.txt` `.csv`；`-n` 限制最多点数（建议 1~3 万，脚本零依赖）。
+
+**2. 在 `config.js` 里填路径**
+
+```js
+model: { url: './assets/models/xxx.json' }
+```
+
+JSON 支持两种写法：
+
+```js
+[[x, y, z], [x, y, z], ...]          // 直接数组
+{ "points": [[x, y, z], ...] }       // 带 count 字段
+```
+
+坐标**无需预处理**，会自动居中并归一化到 `[-1,1]`；加载失败会自动回退到内置方块。
+
+> STEP / IGES / FBX 等格式请先用
+> [3d-model-convert-to-gltf](https://github.com/wangerzi/3d-model-convert-to-gltf)
+> 或 Blender 转成 OBJ / PLY，再跑上面的脚本。
 
 ---
 
