@@ -655,11 +655,19 @@
       x.fillRect(0, 0, 64, 64);
       return c;
     }
-    var SPRITES = {
-      near:  makeSprite('125,162,102'),   // 近处：沙绿
-      gold:  makeSprite('184,144,42'),    // 最近：金瞳
-      back:  makeSprite('63,90,44')       // 背面：深绿雾
-    };
+    /* 按深度连续渐变的色阶 sprite（深绿→沙绿→金瞳），避免旋转时颜色硬切换 */
+    function colorAt(t) {
+      function lerp(a, b, k) { return Math.round(a + (b - a) * k); }
+      if (t < 0.5) {
+        var k = t * 2;                                   // 深绿 → 沙绿
+        return lerp(63, 125, k) + ',' + lerp(90, 162, k) + ',' + lerp(44, 102, k);
+      }
+      var k = (t - 0.5) * 2;                             // 沙绿 → 金瞳
+      return lerp(125, 184, k) + ',' + lerp(162, 144, k) + ',' + lerp(102, 42, k);
+    }
+    var STEPS = 10;
+    var SPRITES = [];
+    for (var i = 0; i < STEPS; i++) SPRITES.push(makeSprite(colorAt(i / (STEPS - 1))));
 
     /* 网格立方体：六面均匀采样，附带外法线，坐标归一化到 [-1,1] */
     function buildCube(div) {
@@ -680,7 +688,7 @@
 
     function take() {
       if (poolIdx < pool.length) return pool[poolIdx++];
-      var o = { x: 0, y: 0, z: 0, a: 0, s: 0, f: 0 };
+      var o = { x: 0, y: 0, z: 0, a: 0, s: 0, t: 0, f: 0 };
       pool.push(o); poolIdx++;
       return o;
     }
@@ -724,15 +732,11 @@
         o.x = cx + x1 * k * scale;
         o.y = cy + y1 * k * scale;
         o.z = z2;
-        if (front) {                              // 正面：亮、稍大
-          o.a = 0.5 + t * 0.5;
-          o.s = (2.0 + t * 2.4);
-          o.f = 1;
-        } else {                                  // 背面：雾感更弱
-          o.a = 0.16 + t * 0.18;
-          o.s = (1.2 + t * 1.2);
-          o.f = 0;
-        }
+        /* 颜色 / 透明度 / 尺寸全部按深度平滑变化，旋转时不再有硬切换 */
+        o.a = 0.15 + t * 0.85;                   // 远 0.15 → 近 1.0
+        o.s = 1.0 + t * 3.0;                     // 远 1.0 → 近 4.0
+        o.t = t;                                  // 保存深度，绘制时选色阶 sprite
+        o.f = front ? 1 : 0;
         list.push(o);
       }
 
@@ -740,8 +744,9 @@
 
       for (var n = 0; n < list.length; n++) {
         var q = list[n];
-        /* 柔光球：sprite 中心实、边缘雾，绘制尺寸含光晕 */
-        var sp = q.f ? (q.a > 0.82 ? SPRITES.gold : SPRITES.near) : SPRITES.back;
+        /* 按深度选色阶 sprite（10 档连续渐变），无颜色跳变 */
+        var idx = Math.min(STEPS - 1, Math.max(0, Math.floor(q.t * STEPS)));
+        var sp = SPRITES[idx];
         var sz = q.s * 3.4;
         ctx.globalAlpha = Math.min(1, q.a);
         ctx.drawImage(sp, q.x - sz / 2, q.y - sz / 2, sz, sz);
