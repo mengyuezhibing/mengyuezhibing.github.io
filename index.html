@@ -232,6 +232,21 @@
   </div>
 </footer>
 
+<!-- ============ QQ 加好友浮层 ============ -->
+<div class="qqpop" id="qqPop" hidden>
+  <div class="qqpop__mask" data-qq-close></div>
+  <div class="qqpop__box" role="dialog" aria-label="添加 QQ 好友">
+    <button class="qqpop__close" data-qq-close aria-label="关闭">&times;</button>
+    <div class="qqpop__head mono">// ADD FRIEND — QQ</div>
+    <div class="qqpop__num" id="qqPopNum">—</div>
+    <p class="qqpop__tip" id="qqPopTip">复制号码后用 QQ 搜索添加，或点击下方按钮唤起 QQ 客户端</p>
+    <div class="qqpop__actions">
+      <button class="btn btn--primary btn--sm" id="qqPopCopy" type="button"><span>复制号码</span></button>
+      <a class="btn btn--ghost btn--sm" id="qqPopOpen" href="#"><span>在 QQ 中打开</span></a>
+    </div>
+  </div>
+</div>
+
 <script src="./js/config.js"></script>
 <script src="./js/app.js"></script>
 </body>

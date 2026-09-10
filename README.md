@@ -104,8 +104,15 @@ profile: {
   name: 'YOUR NAME',        // 导航左上显示名
   nameCn: '你的名字',
   role: 'FRONTEND / CREATIVE DEV',
-  github: 'octocat',        // ← 改成你的 GitHub 用户名（会自动拉取你的仓库）
-  email: 'you@example.com',
+  github: 'octocat',        // ← 改成你的 GitHub 用户名
+  email: 'you@example.com', // 联系区主按钮（mailto）
+  qq: '123456789',          // ← 顶部导航 QQ 图标的号码；留空则自动隐藏该图标
+  location: 'China',
+  links: [                  // 页脚联系链接列表，可任意增删
+    { label: 'GitHub', url: 'https://github.com/octocat' },
+    { label: 'QQ 123456789', url: 'https://wpa.qq.com/msgrd?v=3&uin=123456789&site=qq&menu=yes' },
+    { label: 'QQ邮箱', url: 'mailto:you@example.com' }
+  ]
 }
 ```
 

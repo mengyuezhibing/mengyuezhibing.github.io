@@ -638,9 +638,85 @@ svg{ width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.6; st
 .final__title{ margin-top:1rem; font-family:var(--f-display); font-weight:700; font-size:clamp(1.75rem,5vw,3.5rem); line-height:1.1; }
 .final__desc{ margin-top:1.25rem; color:var(--txt-3); }
 .final__actions{ display:flex; justify-content:center; flex-wrap:wrap; gap:1rem; margin-top:2.5rem; }
-.final__links{ display:flex; justify-content:center; flex-wrap:wrap; gap:1.5rem; margin-top:3rem; padding-top:1.75rem; border-top:1px solid var(--line); }
-.final__links a{ font-family:var(--f-mono); font-size:.6875rem; letter-spacing:.18em; color:var(--txt-3); transition:color .3s var(--ease); }
-.final__links a:hover{ color:var(--accent); }
+.final__links{
+  display:flex; justify-content:center; flex-wrap:wrap;
+  gap:.85rem; margin-top:3rem; padding-top:1.75rem;
+  border-top:1px solid var(--line);
+}
+.final__link a{
+  display:flex; flex-direction:column; gap:.35rem;
+  padding:.8rem 1.35rem;
+  border:1px solid var(--line);
+  background:rgba(45,58,37,.035);
+  text-align:left;
+  transition:border-color .3s var(--ease),background .3s var(--ease),transform .35s var(--ease-out);
+}
+.final__link a:hover{
+  border-color:var(--accent);
+  background:rgba(184,144,42,.09);
+  transform:translateY(-2px);
+}
+.final__link.is-qq a:hover{ border-color:var(--accent-2); background:rgba(125,162,102,.1); }
+.final__linkLabel{
+  font-family:var(--f-mono); font-size:.5625rem; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--txt-3);
+}
+.final__linkValue{
+  font-family:var(--f-mono); font-size:.8125rem; letter-spacing:.05em;
+  color:var(--txt);
+  transition:color .3s var(--ease);
+}
+.final__link a:hover .final__linkValue{ color:var(--accent); }
+.final__link.is-qq a:hover .final__linkValue{ color:var(--accent-2); }
+
+/* ==========================================================
+   QQ 加好友浮层
+   ========================================================== */
+.qqpop{
+  position:fixed; inset:0; z-index:300;
+  display:grid; place-items:center;
+  padding:var(--gut);
+}
+.qqpop[hidden]{ display:none; }
+.qqpop__mask{
+  position:absolute; inset:0;
+  background:rgba(28,36,22,.58);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  animation:qqFade .3s var(--ease);
+}
+@keyframes qqFade{ from{ opacity:0; } to{ opacity:1; } }
+.qqpop__box{
+  position:relative;
+  width:min(92vw,24rem);
+  padding:2.25rem 1.75rem 1.75rem;
+  text-align:center;
+  background:linear-gradient(180deg,#fbf9ec,var(--bg-2));
+  border:1px solid var(--line-strong);
+  box-shadow:0 30px 70px -30px rgba(28,36,22,.6);
+  clip-path:polygon(0 0,calc(100% - 1rem) 0,100% 1rem,100% 100%,1rem 100%,0 calc(100% - 1rem));
+  animation:qqUp .42s var(--ease-out);
+}
+@keyframes qqUp{ from{ opacity:0; transform:translateY(18px) scale(.98); } to{ opacity:1; transform:none; } }
+.qqpop__close{
+  position:absolute; right:.85rem; top:.6rem;
+  width:2rem; height:2rem; line-height:1;
+  font-size:1.4rem; color:var(--txt-3);
+  transition:color .3s var(--ease),transform .35s var(--ease-out);
+}
+.qqpop__close:hover{ color:var(--accent); transform:rotate(90deg); }
+.qqpop__head{ color:var(--accent); margin-bottom:1.15rem; }
+.qqpop__num{
+  font-family:var(--f-display); font-weight:700;
+  font-size:clamp(1.75rem,5vw,2.5rem); letter-spacing:.05em;
+  color:var(--txt);
+  user-select:all;                 /* 方便长按/双击全选复制 */
+}
+.qqpop__tip{ margin-top:.9rem; color:var(--txt-3); font-size:.8125rem; line-height:1.7; }
+.qqpop__actions{
+  display:flex; justify-content:center; flex-wrap:wrap;
+  gap:.75rem; margin-top:1.5rem;
+}
 
 /* ==========================================================
    FOOTER

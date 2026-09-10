@@ -52,24 +52,106 @@
     var gh = $('#navGithub'); if (gh) gh.href = ghUrl;
     var cg = $('#contactGh'); if (cg) cg.href = ghUrl;
 
-    // QQ 图标（顶部导航，GitHub 旁边）
-    var qq = $('#navQQ');
-    if (qq && p.qq) {
-      qq.href = 'https://wpa.qq.com/msgrd?v=3&uin=' + encodeURIComponent(p.qq) + '&site=qq&menu=yes';
-      qq.title = 'QQ: ' + p.qq;
-    } else if (qq) {
-      qq.style.display = 'none';
+    /* ---------- QQ 加好友 ---------- */
+    var QQ = p.qq;
+    var isMobile = /Android|iPhone|iPad|iPod|Windows Phone|HarmonyOS|Mobile/i.test(navigator.userAgent);
+
+    // 唤起 QQ 加好友：桌面用 tencent:// 协议，移动端用 mqqwpa://
+    function qqAddUrl(num) {
+      return isMobile
+        ? 'mqqwpa://im/chat?chat_type=wpa&uin=' + num + '&version=1&src_type=web&web_src=oicqzone.com'
+        : 'tencent://AddContact/?fromId=45&fromSubId=1&subcmd=all&uin=' + num + '&website=www.oicqzone.com';
+    }
+
+    // 浮层：兜底方案（没装 QQ / 协议被拦截时也能加）
+    (function qqPop() {
+      var pop = $('#qqPop');
+      if (!QQ || !pop) return;
+      var numEl = $('#qqPopNum'), copyBtn = $('#qqPopCopy'), openBtn = $('#qqPopOpen');
+      var tip = $('#qqPopTip');
+      numEl.textContent = QQ;
+      openBtn.href = qqAddUrl(QQ);
+
+      function open() {
+        pop.hidden = false;
+        document.body.classList.add('is-locked');
+        if (copyBtn) copyBtn.querySelector('span').textContent = '复制号码';
+        if (tip) tip.textContent = isMobile
+          ? '点击「在 QQ 中打开」直接发起好友申请，或长按上方号码复制'
+          : '复制号码后用 QQ 搜索添加，或点击下方按钮唤起 QQ 客户端';
+      }
+      function close() {
+        pop.hidden = true;
+        document.body.classList.remove('is-locked');
+      }
+      window.__openQQPop = open;
+
+      $$('[data-qq-close]', pop).forEach(function (el) { el.addEventListener('click', close); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !pop.hidden) close();
+      });
+
+      // 复制号码
+      if (copyBtn) copyBtn.addEventListener('click', function () {
+        var label = copyBtn.querySelector('span');
+        var ok = function () {
+          label.textContent = '已复制 ✓';
+          setTimeout(function () { label.textContent = '复制号码'; }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(QQ).then(ok, fallback);
+        } else { fallback(); }
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = QQ;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:-999px;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); ok(); } catch (e) { /* 忽略 */ }
+          document.body.removeChild(ta);
+        }
+      });
+    })();
+
+    // 顶部导航 QQ 图标：点击直接唤起加好友，同时弹出兜底浮层
+    var qqIcon = $('#navQQ');
+    if (qqIcon && QQ) {
+      qqIcon.title = 'QQ: ' + QQ + '　点击加好友';
+      qqIcon.addEventListener('click', function (e) {
+        e.preventDefault();
+        try { window.location.href = qqAddUrl(QQ); } catch (err) { /* 协议不支持则忽略 */ }
+        setTimeout(function () { if (window.__openQQPop) window.__openQQPop(); }, 260);
+      });
+    } else if (qqIcon) {
+      qqIcon.style.display = 'none';
     }
 
     var cm = $('#contactMail');
     if (cm && p.email) { cm.href = 'mailto:' + p.email; cm.querySelector('span').textContent = p.email; }
 
-    // 其它链接
+    // 底部联系方式（label + 具体值）
     var links = $('#contactLinks');
     if (links && Array.isArray(p.links)) {
       links.innerHTML = p.links.map(function (l) {
-        return '<li><a href="' + esc(l.url) + '" target="_blank" rel="noreferrer">' + esc(l.label) + '</a></li>';
+        var isQQ = l.type === 'qq';
+        var href = isQQ ? (QQ ? qqAddUrl(QQ) : '#') : (l.url || '#');
+        return '<li class="final__link' + (isQQ ? ' is-qq' : '') + '">' +
+          '<a href="' + esc(href) + '"' +
+            (isQQ ? ' data-qq-open' : ' target="_blank" rel="noreferrer"') + '>' +
+            '<span class="final__linkLabel">' + esc(l.label) + '</span>' +
+            '<span class="final__linkValue">' + esc(l.value || l.label) + '</span>' +
+          '</a></li>';
       }).join('');
+
+      // 底部 QQ：优先弹浮层（含复制号码，避免游客没装客户端时无从下手）
+      $$('[data-qq-open]', links).forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          if (!window.__openQQPop) return;      // 没配置 QQ 就走默认链接
+          e.preventDefault();
+          window.__openQQPop();
+        });
+      });
     }
   })();
 

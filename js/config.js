@@ -17,9 +17,9 @@ window.SITE_CONFIG = {
     qq: '3444162072',
     location: 'China',
     links: [
-      { label: 'GitHub',    url: 'https://github.com/mengyuezhibing' },
-      { label: 'QQ 3444162072', url: 'https://wpa.qq.com/msgrd?v=3&uin=3444162072&site=qq&menu=yes' },
-      { label: 'QQ邮箱',     url: 'mailto:3444162072@qq.com' }
+      { label: 'GitHub', value: 'mengyuezhibing',  url: 'https://github.com/mengyuezhibing' },
+      { label: 'QQ',     value: '3444162072',      type: 'qq', url: '' },
+      { label: 'QQ邮箱', value: '3444162072@qq.com', url: 'mailto:3444162072@qq.com' }
     ]
   },
 
