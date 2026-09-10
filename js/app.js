@@ -640,6 +640,27 @@
 
     var elX = $('#d3RotX'), elY = $('#d3RotY'), elPts = $('#d3Points');
 
+    /* 预渲染柔光球 sprite：径向渐变 中心实色 → 边缘全透明
+       绘制时只做 drawImage，几千个点也保持流畅 */
+    function makeSprite(rgb) {
+      var c = document.createElement('canvas');
+      c.width = c.height = 64;
+      var x = c.getContext('2d');
+      var g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0.00, 'rgba(' + rgb + ',1)');
+      g.addColorStop(0.28, 'rgba(' + rgb + ',0.92)');   // 实心核心
+      g.addColorStop(0.55, 'rgba(' + rgb + ',0.38)');   // 雾状过渡
+      g.addColorStop(1.00, 'rgba(' + rgb + ',0)');      // 光晕消散
+      x.fillStyle = g;
+      x.fillRect(0, 0, 64, 64);
+      return c;
+    }
+    var SPRITES = {
+      near:  makeSprite('125,162,102'),   // 近处：沙绿
+      gold:  makeSprite('184,144,42'),    // 最近：金瞳
+      back:  makeSprite('63,90,44')       // 背面：深绿雾
+    };
+
     /* 网格立方体：六面均匀采样，附带外法线，坐标归一化到 [-1,1] */
     function buildCube(div) {
       var p = [], step = 2 / div;
@@ -675,7 +696,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      var fov = 3.6, scale = Math.min(W, H) * 0.30;
+      var fov = 6.0, scale = Math.min(W, H) * 0.30;
       var cY = Math.cos(rotY), sY = Math.sin(rotY);
       var cX = Math.cos(rotX), sX = Math.sin(rotX);
 
@@ -703,13 +724,13 @@
         o.x = cx + x1 * k * scale;
         o.y = cy + y1 * k * scale;
         o.z = z2;
-        if (front) {                              // 正面：清晰、较大
-          o.a = 0.6 + t * 0.4;
-          o.s = (0.8 + t * 1.1) * dpr;
+        if (front) {                              // 正面：亮、稍大
+          o.a = 0.5 + t * 0.5;
+          o.s = (2.0 + t * 2.4);
           o.f = 1;
-        } else {                                  // 背面：隐约可见，提供纵深
-          o.a = 0.32 + t * 0.34;
-          o.s = (0.65 + t * 0.75) * dpr;
+        } else {                                  // 背面：雾感更弱
+          o.a = 0.16 + t * 0.18;
+          o.s = (1.2 + t * 1.2);
           o.f = 0;
         }
         list.push(o);
@@ -719,12 +740,13 @@
 
       for (var n = 0; n < list.length; n++) {
         var q = list[n];
-        ctx.fillStyle = q.f
-          ? (q.a > 0.86 ? 'rgba(184,144,42,' + q.a.toFixed(3) + ')'    // 最近处：金
-                        : 'rgba(63,90,44,' + q.a.toFixed(3) + ')')     // 正面：深绿
-          : 'rgba(63,90,44,' + q.a.toFixed(3) + ')';                   // 背面：极淡
-        ctx.fillRect(q.x, q.y, q.s, q.s);
+        /* 柔光球：sprite 中心实、边缘雾，绘制尺寸含光晕 */
+        var sp = q.f ? (q.a > 0.82 ? SPRITES.gold : SPRITES.near) : SPRITES.back;
+        var sz = q.s * 3.4;
+        ctx.globalAlpha = Math.min(1, q.a);
+        ctx.drawImage(sp, q.x - sz / 2, q.y - sz / 2, sz, sz);
       }
+      ctx.globalAlpha = 1;
     }
 
     function fmtDeg(rad) {
