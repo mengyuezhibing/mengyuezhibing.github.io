@@ -664,10 +664,11 @@
       c.width = c.height = 64;
       var x = c.getContext('2d');
       var g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
-      g.addColorStop(0.00, 'rgba(' + rgb + ',1)');
-      g.addColorStop(0.28, 'rgba(' + rgb + ',0.92)');   // 实心核心
-      g.addColorStop(0.55, 'rgba(' + rgb + ',0.38)');   // 雾状过渡
-      g.addColorStop(1.00, 'rgba(' + rgb + ',0)');      // 光晕消散
+      g.addColorStop(0.00, 'rgba(' + rgb + ',1)');      // 中心点
+      g.addColorStop(0.16, 'rgba(' + rgb + ',0.82)');   // 实芯
+      g.addColorStop(0.42, 'rgba(' + rgb + ',0.32)');   // 雾状过渡
+      g.addColorStop(0.72, 'rgba(' + rgb + ',0.10)');   // 外雾
+      g.addColorStop(1.00, 'rgba(' + rgb + ',0)');      // 光晕消散（体积感）
       x.fillStyle = g;
       x.fillRect(0, 0, 64, 64);
       return c;
@@ -741,7 +742,7 @@
         o.z = z2;
         /* 颜色 / 透明度 / 尺寸全部按深度平滑变化，旋转时不再有硬切换 */
         o.a = 0.18 + t * 0.82;                   // 远 0.18 → 近 1.0
-        o.s = 0.55 + t * 1.25;                   // 远 0.55 → 近 1.8（点更小、更密）
+        o.s = 1.3 + t * 1.5;                     // 远 1.3 → 近 2.8（点更大）
         o.t = t;                                  // 保存深度，绘制时选色阶 sprite
         o.f = front ? 1 : 0;
         list.push(o);
@@ -753,7 +754,7 @@
         var q = list[n];
         /* 按深度选色阶 sprite（10 档连续渐变），无颜色跳变 */
         var sp = SPRITE;
-        var sz = q.s * 2.2;
+        var sz = q.s * 3.0;
         ctx.globalAlpha = Math.min(1, q.a);
         ctx.drawImage(sp, q.x - sz / 2, q.y - sz / 2, sz, sz);
       }
@@ -857,10 +858,10 @@
       fetch(MODEL_URL)
         .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
         .then(function (d) { return normalize(d && d.points ? d.points : d); })
-        .then(function (list) { boot(list || buildCube(reduced ? 18 : 34)); })
-        .catch(function () { boot(buildCube(reduced ? 18 : 34)); });
+        .then(function (list) { boot(list || buildCube(reduced ? 14 : 22)); })
+        .catch(function () { boot(buildCube(reduced ? 14 : 22)); });
     } else {
-      boot(buildCube(reduced ? 18 : 34));
+      boot(buildCube(reduced ? 14 : 22));
     }
 
     // 进入视口才跑 rAF，离开即停
