@@ -1,7 +1,47 @@
 [
-  { "cate": "macOS", "title": "macOS 动态壁纸：用 AVPlayer + NSWindow 走过的坑", "date": "2026-08-20", "brief": "从窗口层级、屏保与前台 App 抢焦，到多屏分辨率适配，整理出做菜单栏壁纸应用必须踩过的那几道坎。", "url": "" },
-  { "cate": "macOS", "title": "SwiftUI 在 macOS 上做视频预览窗口的几种姿势", "date": "2026-07-14", "brief": "NSViewControllerRepresentable、AVPlayerLayer、Metal 渲染各自适合什么场景，以及如何避免离屏卡顿。", "url": "" },
-  { "cate": "AI",    "title": "把 AI 增强跑在 Apple Silicon MPS 上的真实速度", "date": "2026-06-02", "brief": "对比 MPS / CPU / eGPU 三种后端在超分与降噪上的吞吐与内存占用，附数据。", "url": "" },
-  { "cate": "工具",   "title": "Electron 桌面小组件：让课表跟着系统通知弹出", "date": "2026-04-18", "brief": "用 Electron 写悬浮小组件时遇到的几个 native-bridge 难题：通知去重、权限弹窗、跨 Dock 唤起。", "url": "" },
-  { "cate": "随笔",   "title": "macOS 菜单栏应用：状态项与事件循环的最佳实践", "date": "2026-02-25", "brief": "为什么 NSStatusItem 的点击回调里不要做重活，以及如何用一个常驻线程 + RunLoop 解决菜单栏应用的「假死」问题。", "url": "" }
+  {
+    "cate": "macOS",
+    "title": "macOS 动态壁纸：用 AVPlayer + NSWindow 走过的坑",
+    "date": "2026-08-20",
+    "brief": "从窗口层级、屏保与前台 App 抢焦，到多屏分辨率适配，整理出做菜单栏壁纸应用必须踩过的那几道坎。",
+    "cover": "./assets/works/wallpaper.jpg",
+    "url": "",
+    "body": "<p>把视频做成桌面壁纸，看似只是「循环播放一段影片」，真正麻烦的是 macOS 的窗口层级：壁纸必须落在桌面背后、又不能让屏保或前台 App 抢走焦点。本文整理了用 NSWindow + NSVisualEffectView 把播放层钉在桌面之后的几种做法，以及在多显示器、不同分辨率下保持铺满的适配细节。</p><p>另外还涉及开机自启（LaunchAgent）、菜单栏常驻与资源占用控制——做到「不卡、不抢焦、不闪」才算合格。</p>"
+  },
+  {
+    "cate": "macOS",
+    "title": "SwiftUI 在 macOS 上做视频预览窗口的几种姿势",
+    "date": "2026-07-14",
+    "brief": "NSViewControllerRepresentable、AVPlayerLayer、Metal 渲染各自适合什么场景，以及如何避免离屏卡顿。",
+    "cover": "./assets/works/chaofeng.jpg",
+    "url": "",
+    "body": "<p>macOS 上做视频预览，常见三条路：NSViewControllerRepresentable 包一层 AppKit 视图、直接用 AVPlayerLayer，或上 Metal 自己画。三者适用场景不同：简单预览用前者最快，需要精确控制时间轴用 AVPlayerLayer，做实时滤镜 / 增强才值得上 Metal。</p><p>重点在避免离屏卡顿：预览窗口不要和主线程抢解码，合理复用 AVPlayer 实例，并在视图消失时及时暂停与释放。</p>"
+  },
+  {
+    "cate": "AI",
+    "title": "把 AI 增强跑在 Apple Silicon MPS 上的真实速度",
+    "date": "2026-06-02",
+    "brief": "对比 MPS / CPU / eGPU 三种后端在超分与降噪上的吞吐与内存占用，附数据。",
+    "cover": "./assets/works/chaofeng.jpg",
+    "url": "",
+    "body": "<p>把超分、降噪这类 AI 增强搬到 Apple Silicon 上跑，MPS 后端通常比 CPU 快一个数量级，但也更吃显存。本文对比 MPS / CPU / eGPU 在常见分辨率下的吞吐与内存占用，给出何时应回落到 CPU 的判据。</p><p>结论是：本地优先的小工具，默认走 MPS，遇到大图再降级，体验最稳。</p>"
+  },
+  {
+    "cate": "工具",
+    "title": "Electron 桌面小组件：让课表跟着系统通知弹出",
+    "date": "2026-04-18",
+    "brief": "用 Electron 写悬浮小组件时遇到的几个 native-bridge 难题：通知去重、权限弹窗、跨 Dock 唤起。",
+    "cover": "./assets/works/kecheng.jpg",
+    "url": "",
+    "body": "<p>用 Electron 做桌面悬浮小组件，最头疼的是 native 桥：系统通知去重、权限弹窗、跨 Dock 唤起，每一步都要和操作系统打交道。本文记录把教务课表解析后常驻桌面的实现，以及上课前定时通知的可靠做法。</p><p>也聊了打包体积与启动速度的平衡——桌面小组件要「轻」，否则用户会直接关掉。</p>"
+  },
+  {
+    "cate": "随笔",
+    "title": "macOS 菜单栏应用：状态项与事件循环的最佳实践",
+    "date": "2026-02-25",
+    "brief": "为什么 NSStatusItem 的点击回调里不要做重活，以及如何用一个常驻线程 + RunLoop 解决菜单栏应用的「假死」问题。",
+    "cover": "./assets/works/wallpaper.jpg",
+    "url": "",
+    "body": "<p>NSStatusItem 的点击回调里不要做重活，否则菜单会「假死」。本文总结菜单栏应用的状态项管理、事件循环与常驻线程的最佳实践：把耗时逻辑丢到后台线程，用 RunLoop 驱动常驻任务，保证菜单随时可点、界面不卡。</p><p>这些经验同样适用于任何需要常驻菜单栏的小工具。</p>"
+  }
 ]

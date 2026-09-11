@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>技术日志 // 详情</title>
+<meta name="description" content="技术日志详情" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+
+<link rel="icon" href="./assets/favicon.ico" sizes="any" />
+<link rel="icon" href="./assets/favicon-192.png" type="image/png" sizes="192x192" />
+<link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+
+<link rel="stylesheet" href="./css/main.css?v=8" />
+</head>
+<body data-page="note">
+
+<header class="ndetail__nav">
+  <a class="ndetail__back" href="index.html#notes"><span>←</span> 返回日志</a>
+  <span class="ndetail__brand mono">PORTFOLIO</span>
+</header>
+
+<main class="ndetail" id="ndetail">
+  <p class="ndetail__loading">加载中…</p>
+</main>
+
+<script>
+(function () {
+  var el = document.getElementById('ndetail');
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function param(name) { return new URLSearchParams(location.search).get(name); }
+
+  var id = parseInt(param('id') || '0', 10);
+  if (isNaN(id)) id = 0;
+
+  fetch('data/notes.json')
+    .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+    .then(function (d) {
+      var list = Array.isArray(d) ? d : (d.notes || []);
+      var n = list[id];
+      if (!n) { el.innerHTML = '<p class="ndetail__loading">未找到该日志。</p>'; return; }
+      var cover = n.cover ? '<div class="ndetail__cover"><img src="' + esc(n.cover) + '" alt=""></div>' : '';
+      var body = n.body || ('<p>' + esc(n.brief) + '</p>');
+      el.innerHTML =
+        '<article class="ndetail__article">' +
+          '<div class="ndetail__meta">' +
+            '<span class="ndetail__cate">' + esc(n.cate) + '</span>' +
+            '<span class="ndetail__date">' + esc(n.date) + '</span>' +
+          '</div>' +
+          '<h1 class="ndetail__title">' + esc(n.title) + '</h1>' +
+          cover +
+          '<div class="ndetail__body">' + body + '</div>' +
+          (n.url ? '<a class="ndetail__link" href="' + esc(n.url) + '" target="_blank" rel="noreferrer">查看原文 →</a>' : '') +
+        '</article>';
+      document.title = esc(n.title) + ' // 技术日志';
+    })
+    .catch(function () {
+      el.innerHTML = '<p class="ndetail__loading">加载失败，请通过本地服务器或 GitHub Pages 打开本页。</p>';
+    });
+})();
+</script>
+</body>
+</html>

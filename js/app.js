@@ -598,7 +598,9 @@
       grid.innerHTML = rs.map(function (n, i) {
         var cover = '<div class="info__cover info__cover--gen" style="--c:' + esc(n.color || 'var(--accent-2)') + '"></div>';
         if (n.cover) cover = '<div class="info__cover"><img src="' + esc(n.cover) + '" alt="" loading="lazy"></div>';
-        return '<a class="info__card" href="' + esc(n.url || '#notes') + '" data-delay="' + (i * 70) + '">' +
+        var href = n.url ? n.url : 'notes-detail.html?id=' + (n.id != null ? n.id : i);
+        var tgt = n.url ? ' target="_blank" rel="noreferrer"' : '';
+        return '<a class="info__card" href="' + esc(href) + '"' + tgt + ' data-delay="' + (i * 70) + '">' +
           cover + '<span class="info__cate">' + esc(n.cate) + '</span>' +
           '<div class="info__body">' +
             '<span class="info__date">' + esc(n.date) + '</span>' +
@@ -612,7 +614,7 @@
     }
 
     function init(list) {
-      all = list || [];
+      all = (list || []).map(function (n, idx) { if (n && typeof n === 'object') n.id = idx; return n; });
       if (!all.length) { grid.innerHTML = '<p class="info__brief" style="padding:0 var(--gut)">暂无内容</p>'; return; }
       buildTabs(buildCates());
       if (more) more.addEventListener('click', function () { shown += PAGE; render(); });
