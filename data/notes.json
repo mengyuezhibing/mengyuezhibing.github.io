@@ -2,7 +2,7 @@
   {
     "cate": "macOS",
     "title": "macOS 动态壁纸：用 AVPlayer + NSWindow 走过的坑",
-    "date": "2026-08-20",
+    "date": "2026-09-10",
     "brief": "从窗口层级、屏保与前台 App 抢焦，到多屏分辨率适配，整理出做菜单栏壁纸应用必须踩过的那几道坎。",
     "cover": "./assets/works/wallpaper.jpg",
     "url": "",
@@ -11,7 +11,7 @@
   {
     "cate": "macOS",
     "title": "SwiftUI 在 macOS 上做视频预览窗口的几种姿势",
-    "date": "2026-07-14",
+    "date": "2026-09-09",
     "brief": "NSViewControllerRepresentable、AVPlayerLayer、Metal 渲染各自适合什么场景，以及如何避免离屏卡顿。",
     "cover": "./assets/works/chaofeng.jpg",
     "url": "",
@@ -20,7 +20,7 @@
   {
     "cate": "AI",
     "title": "把 AI 增强跑在 Apple Silicon MPS 上的真实速度",
-    "date": "2026-06-02",
+    "date": "2026-09-09",
     "brief": "对比 MPS / CPU / eGPU 三种后端在超分与降噪上的吞吐与内存占用，附数据。",
     "cover": "./assets/works/chaofeng.jpg",
     "url": "",
@@ -29,19 +29,10 @@
   {
     "cate": "工具",
     "title": "Electron 桌面小组件：让课表跟着系统通知弹出",
-    "date": "2026-04-18",
+    "date": "2026-09-09",
     "brief": "用 Electron 写悬浮小组件时遇到的几个 native-bridge 难题：通知去重、权限弹窗、跨 Dock 唤起。",
     "cover": "./assets/works/kecheng.jpg",
     "url": "",
     "body": "<p>用 Electron 做桌面悬浮小组件，最头疼的是 native 桥：系统通知去重、权限弹窗、跨 Dock 唤起，每一步都要和操作系统打交道。本文记录把教务课表解析后常驻桌面的实现，以及上课前定时通知的可靠做法。</p><p>也聊了打包体积与启动速度的平衡——桌面小组件要「轻」，否则用户会直接关掉。</p>"
-  },
-  {
-    "cate": "随笔",
-    "title": "macOS 菜单栏应用：状态项与事件循环的最佳实践",
-    "date": "2026-02-25",
-    "brief": "为什么 NSStatusItem 的点击回调里不要做重活，以及如何用一个常驻线程 + RunLoop 解决菜单栏应用的「假死」问题。",
-    "cover": "./assets/works/wallpaper.jpg",
-    "url": "",
-    "body": "<p>NSStatusItem 的点击回调里不要做重活，否则菜单会「假死」。本文总结菜单栏应用的状态项管理、事件循环与常驻线程的最佳实践：把耗时逻辑丢到后台线程，用 RunLoop 驱动常驻任务，保证菜单随时可点、界面不卡。</p><p>这些经验同样适用于任何需要常驻菜单栏的小工具。</p>"
   }
 ]
