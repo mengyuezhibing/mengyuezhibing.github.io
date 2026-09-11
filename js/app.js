@@ -672,19 +672,9 @@
       x.fillRect(0, 0, 64, 64);
       return c;
     }
-    /* 按深度连续渐变的色阶 sprite（深绿→沙绿→金瞳），避免旋转时颜色硬切换 */
-    function colorAt(t) {
-      function lerp(a, b, k) { return Math.round(a + (b - a) * k); }
-      if (t < 0.5) {
-        var k = t * 2;                                   // 深绿 → 沙绿
-        return lerp(63, 125, k) + ',' + lerp(90, 162, k) + ',' + lerp(44, 102, k);
-      }
-      var k = (t - 0.5) * 2;                             // 沙绿 → 金瞳
-      return lerp(125, 184, k) + ',' + lerp(162, 144, k) + ',' + lerp(102, 42, k);
-    }
-    var STEPS = 10;
-    var SPRITES = [];
-    for (var i = 0; i < STEPS; i++) SPRITES.push(makeSprite(colorAt(i / (STEPS - 1))));
+    /* 单色 sprite（沙绿 accent-2），旋转时颜色恒定不变，仅用透明度表现远近，
+       避免出现随转动忽明忽暗的金色偏色 */
+    var SPRITE = makeSprite('125,162,102');
 
     /* 网格立方体：六面均匀采样，附带外法线，坐标归一化到 [-1,1] */
     function buildCube(div) {
@@ -762,8 +752,7 @@
       for (var n = 0; n < list.length; n++) {
         var q = list[n];
         /* 按深度选色阶 sprite（10 档连续渐变），无颜色跳变 */
-        var idx = Math.min(STEPS - 1, Math.max(0, Math.floor(q.t * STEPS)));
-        var sp = SPRITES[idx];
+        var sp = SPRITE;
         var sz = q.s * 2.2;
         ctx.globalAlpha = Math.min(1, q.a);
         ctx.drawImage(sp, q.x - sz / 2, q.y - sz / 2, sz, sz);
